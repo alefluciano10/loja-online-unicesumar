@@ -1,14 +1,14 @@
 import './../models/models.dart';
 
 //Criando a classe BannerModel
-class BamnerModel {
+class BannerModel {
   final int? id;
   final String title;
   final double price;
   final String imageURL;
 
   //Construtor da classe BannerModel
-  BamnerModel({
+  BannerModel({
     required this.id,
     required this.title,
     required this.price,
@@ -16,8 +16,8 @@ class BamnerModel {
   });
 
   //Constrói uma instância de [BannerModel] a partir do ProductModel
-  factory BamnerModel.fromProduct(ProductModel product) {
-    return BamnerModel(
+  factory BannerModel.fromProduct(ProductModel product) {
+    return BannerModel(
       id: product.id,
       title: product.title,
       price: product.price,
@@ -26,8 +26,8 @@ class BamnerModel {
   }
 
   //Constrói uma instância de [BannerModel] a partir de um mapa JSON
-  factory BamnerModel.fromJson(Map<String, dynamic> json) {
-    return BamnerModel(
+  factory BannerModel.fromJson(Map<String, dynamic> json) {
+    return BannerModel(
       id: json['id'],
       title: json['title'],
       price: (json['price'] as num).toDouble(),
