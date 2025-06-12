@@ -38,7 +38,7 @@ class ProductService {
       return ProductModel.fromJson(data);
     } else {
       throw Exception(
-        'Erro ao buscar o produto pelo id: $id - Status Code: ${response.statusCode}',
+        'Erro ao buscar o produto pelo ID: $id - Status Code: ${response.statusCode}',
       );
     }
   }
