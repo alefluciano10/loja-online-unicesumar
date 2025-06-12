@@ -35,7 +35,7 @@ class CartService {
       return CartModel.fromJson(data);
     } else {
       throw Exception(
-        'Erro ao buscar o carrinho pelo id: $id - Status Code: ${response.statusCode}',
+        'Erro ao buscar o carrinho pelo ID: $id - Status Code: ${response.statusCode}',
       );
     }
   }

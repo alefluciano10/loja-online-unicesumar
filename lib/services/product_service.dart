@@ -42,4 +42,27 @@ class ProductService {
       );
     }
   }
+
+  /*
+  Este método fetchProductByCategory busca um produto com base na categoria 
+  fornecida. Ele realiza uma requisição HTTP GET para o endpoint 
+  /products/category/{category}. Caso a resposta seja bem-sucedida (status 200), 
+  os dados retornados são convertidos em um objeto ProductModel. Se a 
+  requisição falhar, uma exceção é lançada com o código de status e a categoria 
+  consultada.
+*/
+
+  Future<ProductModel> fetchProductByCategory(String category) async {
+    final response = await http.get(
+      Uri.parse('${HttpBase.baseURL}/products/category/$category'),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return ProductModel.fromJson(data);
+    } else {
+      throw Exception(
+        'Erro ao buscar o produto pela categoria: $category - Status Code: ${response.statusCode}',
+      );
+    }
+  }
 }
