@@ -19,7 +19,7 @@ class LogiResponsenModel {
   //Construtor da classe LoginResponseModel
   LogiResponsenModel({required this.token});
 
-  //Constrói uma instância de [NameProduct] a partir de um mapa JSON
+  //Constrói uma instância de [LoginResponseModel] a partir de um mapa JSON
   factory LogiResponsenModel.fromJson(Map<String, dynamic> json) {
     return LogiResponsenModel(token: json['token']);
   }
