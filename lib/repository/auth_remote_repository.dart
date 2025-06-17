@@ -7,6 +7,6 @@ class AuthRemoteRepository {
   AuthRemoteRepository(this.authService);
 
   Future<LogiResponsenModel?> login(LoginRequestModel request) async {
-    return await authService.login(request as LogiResponsenModel);
+    return await authService.login(request);
   }
 }

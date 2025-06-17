@@ -12,7 +12,7 @@ sucesso (status 200). Caso contrário, lança uma exceção informando erro de
 autenticação junto com o status da resposta.
 */
 
-  Future<LogiResponsenModel> login(LogiResponsenModel request) async {
+  Future<LogiResponsenModel> login(LoginRequestModel request) async {
     final response = await http.post(
       Uri.parse('${HttpBase.baseURL}/auth/login'),
       headers: {'Content-Type': 'application/json'},
