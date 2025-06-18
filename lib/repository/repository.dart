@@ -8,3 +8,4 @@ export 'cart_products_local_repository.dart';
 export 'cart_repository.dart';
 export 'category_remote_repository.dart';
 export 'category_repository.dart';
+export 'favorite_local_repository.dart';
