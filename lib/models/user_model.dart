@@ -1,5 +1,4 @@
 import './../models/models.dart';
-import './../models/name_model.dart';
 
 //Criando a classe UserModel
 class UserModel {

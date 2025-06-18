@@ -6,7 +6,7 @@ class AddressModel {
   final String street;
   final int number;
   final String zipcode;
-  final GeolocationModel geolication;
+  final GeolocationModel geolocation;
 
   //Construtor da classe AddressModel
   AddressModel({
@@ -14,7 +14,7 @@ class AddressModel {
     required this.street,
     required this.number,
     required this.zipcode,
-    required this.geolication,
+    required this.geolocation,
   });
 
   //Constrói uma instância de [AddressModel] a partir de um mapa JSON
@@ -24,7 +24,7 @@ class AddressModel {
       street: json['street'],
       number: json['number'],
       zipcode: json['zipcode'],
-      geolication: GeolocationModel.fromJson(json['geolocation']),
+      geolocation: GeolocationModel.fromJson(json['geolocation']),
     );
   }
 
@@ -35,7 +35,7 @@ class AddressModel {
       'street': street,
       'number': number,
       'zipcode': zipcode,
-      'geolocation': geolication.toJson(),
+      'geolocation': geolocation.toJson(),
     };
   }
 }
