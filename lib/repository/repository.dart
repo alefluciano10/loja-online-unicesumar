@@ -15,3 +15,5 @@ export 'order_remote_repository.dart';
 export 'order_repository.dart';
 export 'product_remote_repository.dart';
 export 'product_repository.dart';
+export 'rating_local_repository.dart';
+export 'rating_repository.dart';
