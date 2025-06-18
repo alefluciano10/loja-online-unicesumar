@@ -2,7 +2,7 @@ import 'models.dart';
 
 //Criando a classe ProductModel
 class ProductModel {
-  final int? id;
+  final int id;
   final String title;
   final double price;
   final String description;
