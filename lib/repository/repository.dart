@@ -11,3 +11,5 @@ export 'category_repository.dart';
 export 'favorite_local_repository.dart';
 export 'favorite_repository.dart';
 export 'order_local_repository.dart';
+export 'order_remote_repository.dart';
+export 'order_repository.dart';
