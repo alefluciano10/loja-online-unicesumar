@@ -17,3 +17,6 @@ export 'product_remote_repository.dart';
 export 'product_repository.dart';
 export 'rating_local_repository.dart';
 export 'rating_repository.dart';
+export 'user_local_repository.dart';
+export 'user_remote_repository.dart';
+export 'user_repository.dart';
