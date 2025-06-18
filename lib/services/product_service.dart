@@ -52,13 +52,13 @@ class ProductService {
   consultada.
 */
 
-  Future<ProductModel> fetchProductByCategory(String category) async {
+  Future<List<ProductModel>> fetchProductByCategory(String category) async {
     final response = await http.get(
       Uri.parse('${HttpBase.baseURL}/products/category/$category'),
     );
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      return ProductModel.fromJson(data);
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((json) => ProductModel.fromJson(json)).toList();
     } else {
       throw Exception(
         'Erro ao buscar o produto pela categoria: $category - Status Code: ${response.statusCode}',
