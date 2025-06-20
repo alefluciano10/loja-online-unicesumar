@@ -24,7 +24,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   final _passwordController = TextEditingController();
   final _firstnameController = TextEditingController();
   final _lastnameController = TextEditingController();
-  final _phoneController = MaskedTextController(mask: '(00)00000-0000', text: '41999999999');
+  final _phoneController = MaskedTextController(
+    mask: '(00)00000-0000',
+    text: '41999999999',
+  );
   final _cityController = TextEditingController();
   final _streetController = TextEditingController();
   final _numberController = TextEditingController();
@@ -58,20 +61,25 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Editar Perfil'),
           elevation: 2,
-          backgroundColor: theme.primaryColor,
+          backgroundColor: Color.fromARGB(255, 15, 3, 88),
           foregroundColor: Colors.white,
           bottom: const TabBar(
             indicatorColor: Colors.white,
-            labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-            unselectedLabelStyle: TextStyle(fontSize: 14, color: Colors.white70),
+            labelStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            unselectedLabelStyle: TextStyle(
+              fontSize: 14,
+              color: Colors.white70,
+            ),
             unselectedLabelColor: Colors.white70,
             tabs: [
               Tab(text: 'Perfil', icon: Icon(Icons.person)),
@@ -83,10 +91,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           key: _formKey,
           child: TabBarView(
             physics: const NeverScrollableScrollPhysics(),
-            children: [
-              _buildProfileTab(),
-              _buildAddressTab(),
-            ],
+            children: [_buildProfileTab(), _buildAddressTab()],
           ),
         ),
         bottomNavigationBar: Padding(
@@ -98,7 +103,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               style: TextStyle(color: Colors.white),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: theme.primaryColor,
+              backgroundColor: Color.fromARGB(255, 15, 3, 88),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -168,9 +173,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           labelText: 'Senha',
           hintText: 'Informe sua senha',
           isPassword: true,
-          icon: const Icon(
-            Icons.lock_outline,
-          ),
+          icon: const Icon(Icons.lock_outline),
         ),
       ],
     );
@@ -259,7 +262,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       ),
     );
 
-    final success = await userController.updateUserReturningSuccess(updatedUser);
+    final success = await userController.updateUserReturningSuccess(
+      updatedUser,
+    );
 
     if (success) {
       Get.snackbar(

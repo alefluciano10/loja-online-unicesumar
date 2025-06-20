@@ -32,7 +32,8 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.deepPurple,
         scaffoldBackgroundColor: Colors.grey[100],
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color.fromARGB(255, 152, 104, 235),
+          backgroundColor: Color.fromARGB(255, 15, 3, 88),
+
           foregroundColor: Colors.white,
           elevation: 4,
           centerTitle: true,

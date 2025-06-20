@@ -14,8 +14,6 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     // Se for logado e o user ainda não foi carregado, carrega:
     if (isLogado && usuarioController.user.value == null) {
       // Você pode decidir de onde pegar o id → aqui vou simular com id = 1
@@ -36,7 +34,7 @@ class ProfilePage extends StatelessWidget {
                     Icon(
                       Icons.account_circle_outlined,
                       size: 120,
-                      color: theme.primaryColor.withOpacity(0.7),
+                      color: Colors.orange,
                     ),
                     const SizedBox(height: 24),
                     const Text(
@@ -52,10 +50,7 @@ class ProfilePage extends StatelessWidget {
                     const Text(
                       'Faça login para acessar seu perfil, favoritos e pedidos.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black54,
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.black54),
                     ),
                     const SizedBox(height: 36),
                     SizedBox(
@@ -68,7 +63,7 @@ class ProfilePage extends StatelessWidget {
                           style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.primaryColor,
+                          backgroundColor: Color.fromARGB(255, 15, 3, 88),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -103,12 +98,12 @@ class ProfilePage extends StatelessWidget {
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: theme.primaryColor, width: 3),
+                    border: Border.all(color: Colors.orange, width: 3),
                   ),
                   child: const Icon(
                     Icons.account_circle,
                     size: 90,
-                    color: Colors.deepPurple,
+                    color: Colors.orange,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -128,7 +123,7 @@ class ProfilePage extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.person, color: Colors.deepPurple),
+                            const Icon(Icons.person, color: Colors.black87),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
@@ -141,7 +136,7 @@ class ProfilePage extends StatelessWidget {
                         const Divider(height: 24),
                         Row(
                           children: [
-                            const Icon(Icons.email, color: Colors.deepPurple),
+                            const Icon(Icons.email, color: Colors.black87),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
@@ -161,7 +156,7 @@ class ProfilePage extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: Color.fromARGB(255, 15, 3, 88),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -193,10 +188,7 @@ class ProfilePage extends StatelessWidget {
                       authController.logout();
                       Get.offAllNamed('/login');
                     },
-                    icon: const Icon(
-                      Icons.logout,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.logout, color: Colors.white),
                     label: const Text(
                       'Sair',
                       style: TextStyle(color: Colors.white, fontSize: 16),

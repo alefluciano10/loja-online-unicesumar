@@ -14,7 +14,10 @@ class FavoritesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NumberFormat currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    final NumberFormat currencyFormat = NumberFormat.currency(
+      locale: 'pt_BR',
+      symbol: 'R\$',
+    );
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -29,11 +32,7 @@ class FavoritesPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.lock_outline,
-                    size: 100,
-                    color: theme.primaryColor.withOpacity(0.7),
-                  ),
+                  Icon(Icons.lock_outline, size: 100, color: Colors.orange),
                   const SizedBox(height: 24),
                   const Text(
                     'Você não está logado',
@@ -48,10 +47,7 @@ class FavoritesPage extends StatelessWidget {
                   const Text(
                     'Faça login para visualizar seus produtos favoritos.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
                   ),
                   const SizedBox(height: 36),
                   SizedBox(
@@ -64,7 +60,7 @@ class FavoritesPage extends StatelessWidget {
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.primaryColor,
+                        backgroundColor: Color.fromARGB(255, 15, 3, 88),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -91,11 +87,7 @@ class FavoritesPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.favorite_border,
-                    size: 100,
-                    color: theme.primaryColor.withOpacity(0.7),
-                  ),
+                  Icon(Icons.favorite_border, size: 100, color: Colors.orange),
                   const SizedBox(height: 24),
                   const Text(
                     'Nenhum favorito encontrado',
@@ -110,10 +102,7 @@ class FavoritesPage extends StatelessWidget {
                   const Text(
                     'Adicione produtos aos seus favoritos\npara visualizá-los aqui.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black45,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.black45),
                   ),
                   const SizedBox(height: 36),
                 ],
@@ -129,7 +118,9 @@ class FavoritesPage extends StatelessWidget {
           separatorBuilder: (context, index) => const SizedBox(height: 6),
           itemBuilder: (context, index) {
             final produtoId = favoritos[index];
-            final produto = Get.find<ProductController>().getProdutoById(produtoId);
+            final produto = Get.find<ProductController>().getProdutoById(
+              produtoId,
+            );
 
             if (produto == null) {
               return ListTile(
@@ -143,10 +134,7 @@ class FavoritesPage extends StatelessWidget {
               duration: Duration(milliseconds: 300 + (index * 100)),
               curve: Curves.easeOutBack,
               builder: (context, value, child) {
-                return Transform.scale(
-                  scale: value,
-                  child: child,
-                );
+                return Transform.scale(scale: value, child: child);
               },
               child: Card(
                 elevation: 8,
@@ -195,14 +183,18 @@ class FavoritesPage extends StatelessWidget {
                                   style: GoogleFonts.lato(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
-                                    color: theme.primaryColor,
+                                    color: Colors.orange,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete_outline, color: theme.primaryColor),
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: Colors.red.shade600,
+                              size: 24,
+                            ),
                             onPressed: () {
                               favoritosController.toggleFavorito(produtoId);
 
@@ -210,11 +202,14 @@ class FavoritesPage extends StatelessWidget {
                                 'Removido',
                                 '${produto.title} removido dos favoritos.',
                                 colorText: Colors.white,
-                                backgroundColor: theme.primaryColor,
+                                backgroundColor: Colors.green.shade700,
                                 snackPosition: SnackPosition.TOP,
                                 margin: const EdgeInsets.all(16),
                                 borderRadius: 12,
-                                icon: const Icon(Icons.favorite_border, color: Colors.white),
+                                icon: const Icon(
+                                  Icons.favorite_border,
+                                  color: Colors.white,
+                                ),
                                 duration: const Duration(seconds: 2),
                               );
                             },

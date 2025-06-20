@@ -17,7 +17,7 @@ class PrimaryButton extends StatelessWidget {
     this.icon,
     this.width = 250,
     this.height = 45,
-    this.color = Colors.deepPurple,
+    this.color = const Color.fromARGB(255, 15, 3, 88),
   });
 
   @override
@@ -32,6 +32,7 @@ class PrimaryButton extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
         style: ElevatedButton.styleFrom(

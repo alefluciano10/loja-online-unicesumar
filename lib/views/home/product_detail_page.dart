@@ -130,7 +130,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             widget.product.price * quantidade,
                           ),
                           style: const TextStyle(
-                            color: Colors.deepPurple,
+                            color: Colors.orange,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -204,7 +204,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             height: 50,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
+                backgroundColor: Color.fromARGB(255, 15, 3, 88),
                 foregroundColor: Colors.white,
                 textStyle: const TextStyle(
                   fontSize: 16,

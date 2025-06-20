@@ -12,8 +12,14 @@ class OrderDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NumberFormat currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-    final DateFormat dateTimeFormat = DateFormat('dd/MM/yyyy \'às\' HH:mm', 'pt_BR');
+    final NumberFormat currencyFormat = NumberFormat.currency(
+      locale: 'pt_BR',
+      symbol: 'R\$',
+    );
+    final DateFormat dateTimeFormat = DateFormat(
+      'dd/MM/yyyy \'às\' HH:mm',
+      'pt_BR',
+    );
 
     final theme = Theme.of(context);
 
@@ -24,9 +30,7 @@ class OrderDetailPage extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pedido #${order.id}'),
-      ),
+      appBar: AppBar(title: Text('Pedido #${order.id}')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -78,22 +82,29 @@ class OrderDetailPage extends StatelessWidget {
                 final item = order.products[index];
 
                 // Opcional: buscar nome do produto (caso exista no ProductController)
-                final product = Get.find<ProductController>().getProdutoById(item.productId);
+                final product = Get.find<ProductController>().getProdutoById(
+                  item.productId,
+                );
 
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
                     backgroundColor: theme.primaryColor.withOpacity(0.1),
+                    foregroundColor: theme.primaryColor,
+                    radius: 24,
                     child: Text(
                       '${item.productId}',
-                      style: TextStyle(color: theme.primaryColor),
+                      style: TextStyle(color: Colors.black87, fontSize: 16),
                     ),
                   ),
                   title: Text(product?.title ?? 'Produto ${item.productId}'),
                   subtitle: Text('Quantidade: ${item.quantity}'),
                   trailing: Text(
                     currencyFormat.format(item.quantity * item.price),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 );
               },
@@ -114,7 +125,7 @@ class OrderDetailPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: theme.primaryColor,
+                    color: Colors.orange,
                   ),
                 ),
               ],

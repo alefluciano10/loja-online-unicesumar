@@ -20,29 +20,36 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NumberFormat currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-    final theme = Theme.of(context);
+    final NumberFormat currencyFormat = NumberFormat.currency(
+      locale: 'pt_BR',
+      symbol: 'R\$',
+    );
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Meu Carrinho'),
         centerTitle: true,
         actions: [
-          Obx(() => cartController.cartProducts.isEmpty
-              ? const SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsets.only(right: 16, top: 12),
-                  child: CircleAvatar(
-                    radius: 12,
-                    backgroundColor: Colors.orange,
-                    child: Text(
-                      cartController.cartProducts
-                          .fold(0, (sum, item) => sum + item.quantity)
-                          .toString(),
-                      style: const TextStyle(fontSize: 12, color: Colors.white),
+          Obx(
+            () => cartController.cartProducts.isEmpty
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsets.only(right: 16, top: 12),
+                    child: CircleAvatar(
+                      radius: 12,
+                      backgroundColor: Colors.orange,
+                      child: Text(
+                        cartController.cartProducts
+                            .fold(0, (sum, item) => sum + item.quantity)
+                            .toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                ))
+          ),
         ],
       ),
       body: Obx(() {
@@ -58,7 +65,7 @@ class CartPage extends StatelessWidget {
                   Icon(
                     Icons.shopping_cart_outlined,
                     size: 100,
-                    color: theme.primaryColor.withOpacity(0.7),
+                    color: Colors.orange,
                   ),
                   const SizedBox(height: 24),
                   const Text(
@@ -93,68 +100,93 @@ class CartPage extends StatelessWidget {
           children: [
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.only(left: 4, top: 6, right: 2, bottom: 6),
+                padding: const EdgeInsets.only(
+                  left: 4,
+                  top: 6,
+                  right: 2,
+                  bottom: 6,
+                ),
                 itemCount: itens.length,
                 itemBuilder: (context, index) {
                   final item = itens[index];
                   return Card(
                     elevation: 3,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
-                        leading: Stack(
-                          alignment: Alignment.topLeft,
-                          children: [
-                            CircleAvatar(
-                              radius: 28,
-                              backgroundImage: NetworkImage(item.imageUrl),
-                            ),
-                            Obx(() {
-                              final isFavorito = favoriteController.isFavorito(item.productId);
-                              return Positioned(
-                                bottom: -4,
-                                right: -4,
-                                child: IconButton(
-                                  icon: Icon(
-                                    isFavorito ? Icons.favorite : Icons.favorite_border,
-                                    color: isFavorito ? Colors.red : Colors.grey,
-                                    size: 20,
-                                  ),
-                                  onPressed: () {
-                                    if (!isLogado) {
-                                      Get.snackbar(
-                                        'Acesso negado',
-                                        'Faça login para favoritar produtos.',
-                                        colorText: Colors.white,
-                                        backgroundColor: Theme.of(context).primaryColor,
-                                        snackPosition: SnackPosition.TOP,
-                                        margin: const EdgeInsets.all(16),
-                                        borderRadius: 12,
-                                        icon: const Icon(Icons.lock_outline, color: Colors.white),
-                                        duration: const Duration(seconds: 3),
-                                      );
-                                      return;
-                                    }
-                                    favoriteController.toggleFavorito(item.productId);
-                                  },
+                      leading: Stack(
+                        alignment: Alignment.topLeft,
+                        children: [
+                          CircleAvatar(
+                            radius: 28,
+                            backgroundImage: NetworkImage(item.imageUrl),
+                          ),
+                          Obx(() {
+                            final isFavorito = favoriteController.isFavorito(
+                              item.productId,
+                            );
+                            return Positioned(
+                              bottom: -4,
+                              right: -4,
+                              child: IconButton(
+                                icon: Icon(
+                                  isFavorito
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: isFavorito ? Colors.red : Colors.grey,
+                                  size: 20,
                                 ),
-                              );
-                            }),
-                          ],
+                                onPressed: () {
+                                  if (!isLogado) {
+                                    Get.snackbar(
+                                      'Acesso negado',
+                                      'Faça login para favoritar produtos.',
+                                      colorText: Colors.white,
+                                      backgroundColor: Theme.of(
+                                        context,
+                                      ).primaryColor,
+                                      snackPosition: SnackPosition.TOP,
+                                      margin: const EdgeInsets.all(16),
+                                      borderRadius: 12,
+                                      icon: const Icon(
+                                        Icons.lock_outline,
+                                        color: Colors.white,
+                                      ),
+                                      duration: const Duration(seconds: 3),
+                                    );
+                                    return;
+                                  }
+                                  favoriteController.toggleFavorito(
+                                    item.productId,
+                                  );
+                                },
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                      title: Text(
+                        item.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
                         ),
-                        title: Text(
-                          item.title,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(currencyFormat.format(item.price)),
-                        trailing: QuantityWidget(
-                          suffixText: 'Un',
-                          value: item.quantity,
-                          result: (quantity) {
-                            cartController.atualizarquantity(item.productId, quantity);
-                          },
-                        )),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(currencyFormat.format(item.price)),
+                      trailing: QuantityWidget(
+                        suffixText: 'Un',
+                        value: item.quantity,
+                        result: (quantity) {
+                          cartController.atualizarquantity(
+                            item.productId,
+                            quantity,
+                          );
+                        },
+                      ),
+                    ),
                   );
                 },
               ),
@@ -173,14 +205,22 @@ class CartPage extends StatelessWidget {
                       style: TextStyle(color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      backgroundColor: Color.fromARGB(255, 15, 3, 88),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                   Text(
                     'Total: ${currencyFormat.format(cartController.total)}',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -188,41 +228,48 @@ class CartPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 1.0, end: cartController.cartProducts.isEmpty ? 1.0 : 1.05),
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeInOut,
-                  builder: (context, scale, child) {
-                    return Transform.scale(
-                      scale: scale,
-                      child: child,
-                    );
-                  },
-                  child: Obx(() => LoadingButton(
-                        text: 'Finalizar Pedido',
-                        icon: Icons.check_circle_outline,
-                        isLoading: cartController.carregandoFinalizar.value,
-                        onPressed: () async {
-                          if (!isLogado) {
-                            Get.snackbar(
-                              'Acesso negado',
-                              'Faça login para finalizar a compra.',
-                              colorText: Colors.white,
-                              backgroundColor: Theme.of(context).primaryColor,
-                              snackPosition: SnackPosition.TOP,
-                              margin: const EdgeInsets.all(16),
-                              borderRadius: 12,
-                              icon: const Icon(Icons.lock_outline, color: Colors.white),
-                              duration: const Duration(seconds: 3),
-                            );
-                            return;
-                          }
+                tween: Tween(
+                  begin: 1.0,
+                  end: cartController.cartProducts.isEmpty ? 1.0 : 1.05,
+                ),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+                builder: (context, scale, child) {
+                  return Transform.scale(scale: scale, child: child);
+                },
+                child: Obx(
+                  () => LoadingButton(
+                    backgroundColor: Color.fromARGB(255, 15, 3, 88),
+                    text: 'Finalizar Pedido',
+                    icon: Icons.check_circle_outline,
+                    isLoading: cartController.carregandoFinalizar.value,
+                    onPressed: () async {
+                      if (!isLogado) {
+                        Get.snackbar(
+                          'Acesso negado',
+                          'Faça login para finalizar a compra.',
+                          colorText: Colors.white,
+                          backgroundColor: Theme.of(context).primaryColor,
+                          snackPosition: SnackPosition.TOP,
+                          margin: const EdgeInsets.all(16),
+                          borderRadius: 12,
+                          icon: const Icon(
+                            Icons.lock_outline,
+                            color: Colors.white,
+                          ),
+                          duration: const Duration(seconds: 3),
+                        );
+                        return;
+                      }
 
-                          cartController.carregandoFinalizar.value = true;
-                          await cartController.finalizarPedido();
-                          cartController.clearCartBadge();
-                          cartController.carregandoFinalizar.value = false;
-                        },
-                      ))),
+                      cartController.carregandoFinalizar.value = true;
+                      await cartController.finalizarPedido();
+                      cartController.clearCartBadge();
+                      cartController.carregandoFinalizar.value = false;
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         );

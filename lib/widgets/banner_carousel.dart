@@ -17,7 +17,10 @@ class BannerCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NumberFormat currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    final NumberFormat currencyFormat = NumberFormat.currency(
+      locale: 'pt_BR',
+      symbol: 'R\$',
+    );
     return CarouselSlider(
       options: CarouselOptions(
         height: 200,
@@ -28,8 +31,10 @@ class BannerCarousel extends StatelessWidget {
         ProductModel? produto = productController.getProdutoById(banner.id);
         return InkWell(
           onTap: () {
-            Get.to(() => ProductDetailPage(
-                product: produto ??
+            Get.to(
+              () => ProductDetailPage(
+                product:
+                    produto ??
                     ProductModel(
                       id: banner.id,
                       title: banner.title,
@@ -38,7 +43,9 @@ class BannerCarousel extends StatelessWidget {
                       description: '',
                       category: '',
                       rating: RatingModel(rate: 0, count: 0),
-                    )));
+                    ),
+              ),
+            );
           },
           child: Stack(
             children: [
@@ -56,7 +63,11 @@ class BannerCarousel extends StatelessWidget {
                   ),
                   errorWidget: (context, url, error) => Container(
                     color: Colors.grey[300],
-                    child: const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                    child: const Icon(
+                      Icons.broken_image,
+                      size: 50,
+                      color: Colors.grey,
+                    ),
                   ),
                   fadeInDuration: const Duration(milliseconds: 500),
                 ),
@@ -68,7 +79,10 @@ class BannerCarousel extends StatelessWidget {
                 left: 12,
                 right: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.6),
                     borderRadius: BorderRadius.circular(8),
