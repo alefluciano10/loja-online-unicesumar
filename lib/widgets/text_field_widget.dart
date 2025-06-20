@@ -9,16 +9,15 @@ class TextFieldWidget extends StatelessWidget {
   final int? maxLines;
   final bool isPassword;
 
-  const TextFieldWidget({
-    super.key,
-    required this.controller,
-    required this.labelText,
-    required this.hintText,
-    required this.icon,
-    this.isPassword = false,
-    this.maxLines,
-    this.keyboard,
-  });
+  const TextFieldWidget(
+      {super.key,
+      required this.controller,
+      required this.labelText,
+      required this.hintText,
+      required this.icon,
+      this.isPassword = false,
+      this.maxLines,
+      this.keyboard});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +33,9 @@ class TextFieldWidget extends StatelessWidget {
         hintText: hintText,
         hintStyle: const TextStyle(color: Colors.black87, fontSize: 14),
         prefixIcon: icon,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xFFB0BEC5)),
           borderRadius: BorderRadius.circular(15),
@@ -44,7 +45,10 @@ class TextFieldWidget extends StatelessWidget {
           horizontal: 12,
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.indigoAccent, width: 2),
+          borderSide: const BorderSide(
+            color: Colors.indigoAccent,
+            width: 2,
+          ),
           borderRadius: BorderRadius.circular(15),
         ),
       ),

@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import './../repository/repository.dart';
 import './../models/models.dart';
-import './controller.dart';
+import './controllers.dart';
 
 class AuthController extends GetxController {
   final AuthRepository authRepository;
@@ -18,7 +18,7 @@ class AuthController extends GetxController {
   final box = GetStorage();
 
   // Resposta do login
-  final Rx<LogiResponsenModel?> loginResponse = Rx<LogiResponsenModel?>(null);
+  final Rx<LoginResponseModel?> loginResponse = Rx<LoginResponseModel?>(null);
 
   // Efetuar login
   Future<void> login(LoginRequestModel request) async {
@@ -34,8 +34,8 @@ class AuthController extends GetxController {
         box.write('token', response.token);
 
         // Buscar o user pelo username do LoginRequestModel
-        final userModel = await Get.find<UserController>().userRepository
-            .getUserByUsername(request.username);
+        final userModel =
+            await Get.find<UserController>().userRepository.getUserByUsername(request.username);
 
         if (userModel != null) {
           box.write('usuario', jsonEncode(userModel.toJson()));

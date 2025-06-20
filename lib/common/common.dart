@@ -1,1 +1,3 @@
-export './http_base.dart';
+class Common {
+  static const String baseUrl = 'https://fakestoreapi.com';
+}

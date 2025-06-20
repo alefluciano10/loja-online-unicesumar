@@ -33,9 +33,7 @@ class QuantityWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _QuantityButton(
-            icon: !isRemovable || value > 1
-                ? Icons.remove
-                : Icons.delete_forever,
+            icon: !isRemovable || value > 1 ? Icons.remove : Icons.delete_forever,
             color: !isRemovable || value > 1 ? Colors.grey : Colors.red,
             onPressed: () {
               if (value == 1 && !isRemovable) return;
@@ -48,7 +46,10 @@ class QuantityWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Text(
               '$value$suffixText',
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           _QuantityButton(
@@ -86,8 +87,15 @@ class _QuantityButton extends StatelessWidget {
         child: Ink(
           height: 25,
           width: 25,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          child: Icon(icon, color: Colors.white, size: 16),
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 16,
+          ),
         ),
       ),
     );

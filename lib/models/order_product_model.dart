@@ -18,6 +18,10 @@ class OrderProductModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {'productId': productId, 'quantity': quantity, 'price': price};
+    return {
+      'productId': productId,
+      'quantity': quantity,
+      'price': price,
+    };
   }
 }

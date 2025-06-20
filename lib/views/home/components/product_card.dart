@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:get/get.dart';
 
-import './../../../controllers/controller.dart';
+import './../../../controllers/controllers.dart';
 import './../../../models/models.dart';
 
 class ProductCard extends StatelessWidget {
@@ -15,8 +15,7 @@ class ProductCard extends StatelessWidget {
 
   final CartController carrinhoController = Get.find<CartController>();
   final AuthController usuarioController = Get.find<AuthController>();
-  final FavoritosController favoritosController =
-      Get.find<FavoritosController>();
+  final FavoritosController favoritosController = Get.find<FavoritosController>();
 
   ProductCard({
     super.key,
@@ -31,15 +30,14 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NumberFormat currencyFormat = NumberFormat.currency(
-      locale: 'pt_BR',
-      symbol: 'R\$',
-    );
+    final NumberFormat currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
     return Card(
       elevation: 3,
       margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -50,9 +48,7 @@ class ProductCard extends StatelessWidget {
               child: Container(
                 key: imageGk,
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(12),
-                  ),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                   child: CachedNetworkImage(
                     imageUrl: product.image,
                     fit: BoxFit.cover,
@@ -68,11 +64,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     errorWidget: (context, url, error) => Container(
                       color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.broken_image,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
+                      child: const Icon(Icons.broken_image, size: 50, color: Colors.grey),
                     ),
                     fadeInDuration: const Duration(milliseconds: 500),
                   ),
@@ -86,9 +78,7 @@ class ProductCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.grey[900],
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(12),
-              ),
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
             ),
             child: Column(
               children: [
@@ -113,9 +103,7 @@ class ProductCard extends StatelessWidget {
                   children: [
                     /// Favoritar
                     Obx(() {
-                      final isFavorito = favoritosController.isFavorito(
-                        product.id,
-                      );
+                      final isFavorito = favoritosController.isFavorito(product.id);
                       return Material(
                         color: Colors.transparent,
                         child: InkWell(
@@ -130,10 +118,7 @@ class ProductCard extends StatelessWidget {
                                 snackPosition: SnackPosition.TOP,
                                 margin: const EdgeInsets.all(16),
                                 borderRadius: 12,
-                                icon: const Icon(
-                                  Icons.lock_outline,
-                                  color: Colors.white,
-                                ),
+                                icon: const Icon(Icons.lock_outline, color: Colors.white),
                                 duration: const Duration(seconds: 3),
                               );
                               return;
@@ -143,9 +128,7 @@ class ProductCard extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(4),
                             child: Icon(
-                              isFavorito
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
+                              isFavorito ? Icons.favorite : Icons.favorite_border,
                               color: isFavorito ? Colors.red : Colors.white,
                               size: 18,
                             ),
@@ -172,10 +155,7 @@ class ProductCard extends StatelessWidget {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(20),
                           onTap: () async {
-                            await carrinhoController.addProductToCart(
-                              product,
-                              1,
-                            );
+                            await carrinhoController.addProductToCart(product, 1);
                             cartAnimationMethod(imageGk);
                           },
                           child: const Padding(

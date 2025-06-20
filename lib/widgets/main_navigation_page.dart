@@ -2,7 +2,7 @@ import 'package:add_to_cart_animation/add_to_cart_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import './../controllers/controller.dart';
+import './../controllers/controllers.dart';
 import './../views/views.dart';
 
 class MainNavigationPage extends StatefulWidget {
@@ -13,9 +13,7 @@ class MainNavigationPage extends StatefulWidget {
 }
 
 class _MainNavigationPageState extends State<MainNavigationPage> {
-  final MainNavigationController navigationController = Get.put(
-    MainNavigationController(),
-  );
+  final MainNavigationController navigationController = Get.put(MainNavigationController());
   final CartController cartController = Get.find<CartController>();
 
   // GlobalKey do AddToCartIcon
@@ -47,26 +45,26 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       height: 30,
       width: 30,
       opacity: 0.85,
-      dragAnimation: const DragToCartAnimationOptions(rotation: true),
+      dragAnimation: const DragToCartAnimationOptions(
+        rotation: true,
+      ),
       jumpAnimation: const JumpAnimationOptions(),
       createAddToCartAnimation: (runAnimation) {
         runAddToCartAnimation = runAnimation;
-        cartController.setRunAddToCartAnimation(runAnimation);
+        cartController.setRunAddToCartAnimation(
+          runAnimation,
+        );
         cartController.setCartKey(cartKey);
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Obx(
-            () => Text(
-              navigationController.selectedIndex.value == 0
-                  ? 'Loja Virtual'
-                  : navigationController.selectedIndex.value == 1
+          title: Obx(() => Text(navigationController.selectedIndex.value == 0
+              ? 'Loja Virtual'
+              : navigationController.selectedIndex.value == 1
                   ? 'Meus Pedidos'
                   : navigationController.selectedIndex.value == 2
-                  ? 'Meus Favoritos'
-                  : 'Meu Perfil',
-            ),
-          ),
+                      ? 'Meus Favoritos'
+                      : 'Meu Perfil')),
           actions: [
             GestureDetector(
               onTap: () {
@@ -83,10 +81,12 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             ),
           ],
         ),
-        body: Obx(() {
-          navigationController.totalPages = _pages.length;
-          return _pages[navigationController.selectedIndex.value];
-        }), // << CORRETO
+        body: Obx(
+          () {
+            navigationController.totalPages = _pages.length;
+            return _pages[navigationController.selectedIndex.value];
+          },
+        ), // << CORRETO
         bottomNavigationBar: Obx(
           () => BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
@@ -96,18 +96,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             unselectedItemColor: Colors.grey,
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.receipt_long),
-                label: 'Pedidos',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.favorite),
-                label: 'Favoritos',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Perfil',
-              ),
+              BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Pedidos'),
+              BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favoritos'),
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
             ],
           ),
         ),

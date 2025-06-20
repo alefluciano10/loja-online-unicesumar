@@ -1,31 +1,68 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import './../common/common.dart';
-import './../models/models.dart';
+import '../database/database.dart';
+import '../models/models.dart';
+import '../common/common.dart';
 
 class AuthService {
-  /*
-Este método login realiza uma requisição HTTP POST para autenticar um usuário.
-Envia os dados de login (usuário/senha) no corpo da requisição em formato JSON.
-Retorna um objeto LogiResponsenModel com os dados da resposta em caso de 
-sucesso (status 200). Caso contrário, lança uma exceção informando erro de 
-autenticação junto com o status da resposta.
-*/
-
-  Future<LogiResponsenModel> login(LoginRequestModel request) async {
+  Future<LoginResponseModel> login(LoginRequestModel request) async {
     final response = await http.post(
-      Uri.parse('${HttpBase.baseURL}/auth/login'),
+      Uri.parse('${Common.baseUrl}/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(request.toJson()),
     );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      return LogiResponsenModel.fromJson(data);
+      return LoginResponseModel.fromJson(data);
     } else {
-      throw Exception(
-        'Erro no login: Usuário ou senha está incorreta, Status Code: ${response.statusCode}',
+      // Tentativa de buscar usuário localmente
+      final localUser = await getUserByNameAndPassword(request.username, request.password);
+      if (localUser != null) {
+        return LoginResponseModel(
+          token:
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXIiOiJqb2huZCIsImlhdCI6MTc1MDM3NzI4NH0.weCwGHqmhHxCcS7F99jmqpwFlC8Ei1SMXrMLFyrGzaw',
+        );
+      }
+
+      // Caso não encontre localmente, lança exceção original
+      throw Exception('Erro no login: ${response.statusCode}');
+    }
+  }
+
+  Future<UserModel?> getUserByNameAndPassword(String userName, String password) async {
+    final db = await AppDatabase().database;
+    final maps = await db.query(
+      'users',
+      where: 'username = ? AND password = ?',
+      whereArgs: [userName, password],
+    );
+
+    if (maps.isNotEmpty) {
+      final map = maps.first;
+      return UserModel(
+        id: map['id'] as int,
+        email: map['email'] as String,
+        username: map['username'] as String,
+        password: map['password'] as String,
+        name: NameModel(
+          firstname: map['firstname'] as String,
+          lastname: map['lastname'] as String,
+        ),
+        address: AddressModel(
+          city: map['city'] as String,
+          street: map['street'] as String,
+          number: map['number'] as int,
+          zipcode: map['zipcode'] as String,
+          geolocation: GeolocationModel(
+            lat: map['lat'] as String,
+            long: map['long'] as String,
+          ),
+        ),
+        phone: map['phone'] as String,
       );
     }
+
+    return null;
   }
 }

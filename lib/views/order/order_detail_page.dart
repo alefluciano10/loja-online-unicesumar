@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../controllers/controller.dart';
+import '../../controllers/controllers.dart';
 import './../../models/models.dart';
 
 class OrderDetailPage extends StatelessWidget {
@@ -12,14 +12,8 @@ class OrderDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NumberFormat currencyFormat = NumberFormat.currency(
-      locale: 'pt_BR',
-      symbol: 'R\$',
-    );
-    final DateFormat dateTimeFormat = DateFormat(
-      'dd/MM/yyyy \'às\' HH:mm',
-      'pt_BR',
-    );
+    final NumberFormat currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    final DateFormat dateTimeFormat = DateFormat('dd/MM/yyyy \'às\' HH:mm', 'pt_BR');
 
     final theme = Theme.of(context);
 
@@ -30,7 +24,9 @@ class OrderDetailPage extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text('Pedido #${order.id}')),
+      appBar: AppBar(
+        title: Text('Pedido #${order.id}'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -82,9 +78,7 @@ class OrderDetailPage extends StatelessWidget {
                 final item = order.products[index];
 
                 // Opcional: buscar nome do produto (caso exista no ProductController)
-                final product = Get.find<ProductController>().getProdutoById(
-                  item.productId,
-                );
+                final product = Get.find<ProductController>().getProdutoById(item.productId);
 
                 return ListTile(
                   contentPadding: EdgeInsets.zero,

@@ -11,7 +11,7 @@ class ProductRemoteRepository {
   }
 
   Future<List<ProductModel>> fetchProductsByCategory(String category) async {
-    return await productService.fetchProductByCategory(category);
+    return await productService.fetchProductsByCategory(category);
   }
 
   Future<ProductModel> fetchProductById(int id) async {

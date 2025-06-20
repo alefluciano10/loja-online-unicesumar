@@ -1,6 +1,5 @@
 import './../models/models.dart';
 
-//Criando a classe UserModel
 class UserModel {
   final int id;
   final String email;
@@ -10,7 +9,6 @@ class UserModel {
   final AddressModel address;
   final String phone;
 
-  //Construtor da classe UserModel
   UserModel({
     required this.id,
     required this.email,
@@ -21,7 +19,6 @@ class UserModel {
     required this.phone,
   });
 
-  //Constrói uma instância de [UserModel] a partir de um mapa JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'],
@@ -34,7 +31,6 @@ class UserModel {
     );
   }
 
-  //Converte a instância de [UserModel] em um mapa JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -47,6 +43,7 @@ class UserModel {
     };
   }
 
+  // Adiciona aqui:
   UserModel copyWith({
     int? id,
     String? email,

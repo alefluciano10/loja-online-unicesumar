@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import './../../controllers/controller.dart';
+import './../../controllers/controllers.dart';
 import '../views.dart';
 
 class CategoryPage extends StatelessWidget {
@@ -17,7 +17,9 @@ class CategoryPage extends StatelessWidget {
     categoryController.fetchProductsByCategory(categoria);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Categoria: $categoria')),
+      appBar: AppBar(
+        title: Text('Categoria: $categoria'),
+      ),
       body: Obx(() {
         if (categoryController.carregando.value) {
           return const Center(child: CircularProgressIndicator());

@@ -6,7 +6,11 @@ import '../models/models.dart';
 class UserLocalRepository {
   Future<UserModel?> getUserById(int id) async {
     final db = await AppDatabase().database;
-    final maps = await db.query('users', where: 'id = ?', whereArgs: [id]);
+    final maps = await db.query(
+      'users',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
 
     if (maps.isNotEmpty) {
       final map = maps.first;
@@ -110,20 +114,24 @@ class UserLocalRepository {
 
   Future<void> saveUser(UserModel user) async {
     final db = await AppDatabase().database;
-    await db.insert('users', {
-      'id': user.id,
-      'email': user.email,
-      'username': user.username,
-      'password': user.password,
-      'firstname': user.name.firstname,
-      'lastname': user.name.lastname,
-      'city': user.address.city,
-      'street': user.address.street,
-      'number': user.address.number,
-      'zipcode': user.address.zipcode,
-      'lat': user.address.geolocation.lat,
-      'long': user.address.geolocation.long,
-      'phone': user.phone,
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      'users',
+      {
+        'id': user.id,
+        'email': user.email,
+        'username': user.username,
+        'password': user.password,
+        'firstname': user.name.firstname,
+        'lastname': user.name.lastname,
+        'city': user.address.city,
+        'street': user.address.street,
+        'number': user.address.number,
+        'zipcode': user.address.zipcode,
+        'lat': user.address.geolocation.lat,
+        'long': user.address.geolocation.long,
+        'phone': user.phone,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 }

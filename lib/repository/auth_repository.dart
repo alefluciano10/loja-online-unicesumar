@@ -9,15 +9,13 @@ class AuthRepository {
 
   AuthRepository(this.localRepository, this.remoteRepository);
 
-  Future<LogiResponsenModel?> findUserByUsername(String username) async {
+  Future<LoginResponseModel?> findUserByUsername(String username) async {
     return await localRepository.getAuthByUsername(username);
   }
 
-  Future<LogiResponsenModel?> login(LoginRequestModel request) async {
+  Future<LoginResponseModel?> login(LoginRequestModel request) async {
     // Primeiro tenta buscar local pelo username
-    LogiResponsenModel? auth = await localRepository.getAuthByUsername(
-      request.username,
-    );
+    LoginResponseModel? auth = await localRepository.getAuthByUsername(request.username);
 
     if (auth != null) {
       if (kDebugMode) {

@@ -4,24 +4,21 @@ import './../database/app_database.dart';
 import './../models/models.dart';
 
 class RatingLocalRepository {
-  Future<void> saveOrUpdateRating(
-    int userId,
-    int productId,
-    RatingModel rating,
-  ) async {
+  Future<void> saveOrUpdateRating(int userId, int productId, RatingModel rating) async {
     final db = await AppDatabase().database;
-    await db.insert('rating', {
-      'userId': userId,
-      'productId': productId,
-      'rate': rating.rate,
-      'count': rating.count,
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      'rating',
+      {
+        'userId': userId,
+        'productId': productId,
+        'rate': rating.rate,
+        'count': rating.count,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  Future<RatingModel?> getRatingByUserAndProduct(
-    int userId,
-    int productId,
-  ) async {
+  Future<RatingModel?> getRatingByUserAndProduct(int userId, int productId) async {
     final db = await AppDatabase().database;
     final maps = await db.query(
       'rating',

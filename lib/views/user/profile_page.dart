@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import './../../controllers/controller.dart';
+import './../../controllers/controllers.dart';
 import './../views.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -52,7 +52,10 @@ class ProfilePage extends StatelessWidget {
                     const Text(
                       'Faça login para acessar seu perfil, favoritos e pedidos.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.black54),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                      ),
                     ),
                     const SizedBox(height: 36),
                     SizedBox(
@@ -190,7 +193,10 @@ class ProfilePage extends StatelessWidget {
                       authController.logout();
                       Get.offAllNamed('/login');
                     },
-                    icon: const Icon(Icons.logout, color: Colors.white),
+                    icon: const Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                    ),
                     label: const Text(
                       'Sair',
                       style: TextStyle(color: Colors.white, fontSize: 16),

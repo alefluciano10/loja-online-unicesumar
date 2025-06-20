@@ -1,4 +1,8 @@
-enum OrderStatus { concluido, emAndamento, cancelado }
+enum OrderStatus {
+  concluido,
+  emAndamento,
+  cancelado,
+}
 
 extension OrderStatusExtension on OrderStatus {
   String get label {

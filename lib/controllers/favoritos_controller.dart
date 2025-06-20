@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
 import '../repository/repository.dart';
-import 'controller.dart';
+import 'controllers.dart';
 
 class FavoritosController extends GetxController {
   final FavoritosRepository favoritosRepository;
@@ -15,9 +15,7 @@ class FavoritosController extends GetxController {
       return;
     }
 
-    final favoritosData = await favoritosRepository.getFavoritosByUserId(
-      userId,
-    );
+    final favoritosData = await favoritosRepository.getFavoritosByUserId(userId);
     favoritos.assignAll(favoritosData.map((fav) => fav['productId'] as int));
   }
 

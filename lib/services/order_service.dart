@@ -5,7 +5,7 @@ import '../models/order_model.dart';
 
 class OrderService {
   Future<List<OrderModel>> fetchOrders() async {
-    final response = await http.get(Uri.parse('${HttpBase.baseURL}/carts'));
+    final response = await http.get(Uri.parse('${Common.baseUrl}/carts'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);

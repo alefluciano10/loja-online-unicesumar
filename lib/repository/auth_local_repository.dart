@@ -6,13 +6,17 @@ import './../models/models.dart';
 class AuthLocalRepository {
   Future<void> saveAuth(String username, String token) async {
     final db = await AppDatabase().database;
-    await db.insert('auth', {
-      'username': username,
-      'token': token,
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      'auth',
+      {
+        'username': username,
+        'token': token,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
-  Future<LogiResponsenModel?> login(LoginRequestModel request) async {
+  Future<LoginResponseModel?> login(LoginRequestModel request) async {
     final db = await AppDatabase().database;
     final maps = await db.query(
       'auth',
@@ -22,13 +26,15 @@ class AuthLocalRepository {
 
     if (maps.isNotEmpty) {
       final map = maps.first;
-      return LogiResponsenModel(token: map['token'] as String);
+      return LoginResponseModel(
+        token: map['token'] as String,
+      );
     }
 
     return null;
   }
 
-  Future<LogiResponsenModel?> getAuthByUsername(String username) async {
+  Future<LoginResponseModel?> getAuthByUsername(String username) async {
     final db = await AppDatabase().database;
     final maps = await db.query(
       'auth',
@@ -38,7 +44,9 @@ class AuthLocalRepository {
 
     if (maps.isNotEmpty) {
       final map = maps.first;
-      return LogiResponsenModel(token: map['token'] as String);
+      return LoginResponseModel(
+        token: map['token'] as String,
+      );
     }
 
     return null;

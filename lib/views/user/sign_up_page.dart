@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import './../../controllers/controller.dart';
+import './../../controllers/controllers.dart';
 import './../../widgets/primary_button.dart';
 import './../../models/models.dart';
 
@@ -50,8 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
       _isLoading = false;
     });
 
-    if (usuarioController.erro.value.isEmpty &&
-        usuarioController.user.value != null) {
+    if (usuarioController.erro.value.isEmpty && usuarioController.user.value != null) {
       Get.snackbar(
         'Cadastro realizado',
         'Sua conta foi criada com sucesso!',
@@ -106,11 +105,7 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 15),
 
               // Branding
-              const Icon(
-                Icons.shopping_bag,
-                size: 80,
-                color: Colors.deepPurple,
-              ),
+              const Icon(Icons.shopping_bag, size: 80, color: Colors.deepPurple),
               const SizedBox(height: 16),
               const Text(
                 'Minha Loja Online',
@@ -123,7 +118,10 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 8),
               const Text(
                 'Crie sua conta para começar',
-                style: TextStyle(fontSize: 16, color: Colors.black54),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
               ),
 
               const SizedBox(height: 32),
@@ -177,10 +175,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   icon: const Icon(Icons.person_add, color: Colors.white),
                   label: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Cadastrar',
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
+                      : const Text('Cadastrar',
+                          style: TextStyle(fontSize: 16, color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
                     shape: RoundedRectangleBorder(

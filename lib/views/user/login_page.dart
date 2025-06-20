@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import './../../controllers/controller.dart';
+import './../../controllers/controllers.dart';
 import './../../widgets/widgets.dart';
 import './../../models/models.dart';
 

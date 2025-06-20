@@ -12,7 +12,7 @@ class CartProductsLocalRepository {
         'quantity': cartProduct.quantity,
         'title': cartProduct.title,
         'price': cartProduct.price,
-        'imageUrl': cartProduct.imageURL,
+        'imageUrl': cartProduct.imageUrl,
       },
       where: 'cartId = ? AND productId = ?',
       whereArgs: [cartId, cartProduct.productId],
@@ -20,14 +20,17 @@ class CartProductsLocalRepository {
 
     // Se não atualizou nada (ou seja, o item não existia), faz INSERT
     if (count == 0) {
-      await db.insert('cart_products', {
-        'cartId': cartId,
-        'productId': cartProduct.productId,
-        'quantity': cartProduct.quantity,
-        'title': cartProduct.title,
-        'price': cartProduct.price,
-        'imageUrl': cartProduct.imageURL,
-      });
+      await db.insert(
+        'cart_products',
+        {
+          'cartId': cartId,
+          'productId': cartProduct.productId,
+          'quantity': cartProduct.quantity,
+          'title': cartProduct.title,
+          'price': cartProduct.price,
+          'imageUrl': cartProduct.imageUrl,
+        },
+      );
     }
   }
 
@@ -45,6 +48,10 @@ class CartProductsLocalRepository {
 
   Future<void> deleteCartProducts(int cartId) async {
     final db = await AppDatabase().database;
-    await db.delete('cart_products', where: 'cartId = ?', whereArgs: [cartId]);
+    await db.delete(
+      'cart_products',
+      where: 'cartId = ?',
+      whereArgs: [cartId],
+    );
   }
 }

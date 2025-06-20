@@ -1,9 +1,10 @@
+// lib/views/profile/edit_profile_page.dart
 import 'package:flutter_masked_text3/flutter_masked_text3.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import './../../widgets/text_field_widget.dart';
-import './../../controllers/controller.dart';
+import './../../controllers/controllers.dart';
 import './../../models/models.dart';
 
 class ProfileEditPage extends StatefulWidget {
@@ -23,10 +24,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   final _passwordController = TextEditingController();
   final _firstnameController = TextEditingController();
   final _lastnameController = TextEditingController();
-  final _phoneController = MaskedTextController(
-    mask: '(00)00000-0000',
-    text: '41999999999',
-  );
+  final _phoneController = MaskedTextController(mask: '(00)00000-0000', text: '41999999999');
   final _cityController = TextEditingController();
   final _streetController = TextEditingController();
   final _numberController = TextEditingController();
@@ -72,15 +70,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           foregroundColor: Colors.white,
           bottom: const TabBar(
             indicatorColor: Colors.white,
-            labelStyle: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-            unselectedLabelStyle: TextStyle(
-              fontSize: 14,
-              color: Colors.white70,
-            ),
+            labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+            unselectedLabelStyle: TextStyle(fontSize: 14, color: Colors.white70),
             unselectedLabelColor: Colors.white70,
             tabs: [
               Tab(text: 'Perfil', icon: Icon(Icons.person)),
@@ -92,7 +83,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           key: _formKey,
           child: TabBarView(
             physics: const NeverScrollableScrollPhysics(),
-            children: [_buildProfileTab(), _buildAddressTab()],
+            children: [
+              _buildProfileTab(),
+              _buildAddressTab(),
+            ],
           ),
         ),
         bottomNavigationBar: Padding(
@@ -171,10 +165,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         const SizedBox(height: 10),
         TextFieldWidget(
           controller: _passwordController,
-          labelText: 'Password',
+          labelText: 'Senha',
           hintText: 'Informe sua senha',
           isPassword: true,
-          icon: const Icon(Icons.lock_outline),
+          icon: const Icon(
+            Icons.lock_outline,
+          ),
         ),
       ],
     );
@@ -263,9 +259,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       ),
     );
 
-    final success = await userController.updateUserReturningSuccess(
-      updatedUser,
-    );
+    final success = await userController.updateUserReturningSuccess(updatedUser);
 
     if (success) {
       Get.snackbar(

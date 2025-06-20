@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import './../controllers/controller.dart';
+import './../controllers/controllers.dart';
 import './../repository/repository.dart';
 import './../models/models.dart';
 
@@ -87,7 +87,7 @@ class CartController extends GetxController {
         quantity: novaQuantidade,
         title: produto.title,
         price: produto.price,
-        imageURL: produto.image,
+        imageUrl: produto.image,
       );
 
       await cartRepository.saveCartProduct(cart.value!.id, cartProduct);
@@ -170,10 +170,21 @@ class CartController extends GetxController {
         quantity: quantity,
         title: produto.title,
         price: produto.price,
-        imageURL: produto.image,
+        imageUrl: produto.image,
       );
       await cartRepository.saveCartProduct(cart.value!.id, cartProduct);
 
+      Get.snackbar(
+        'Itens adicionados ao carrinho',
+        '${quantity}x ${produto.title} foram adicionados ao carrinho.',
+        colorText: Colors.white,
+        backgroundColor: Colors.green[900],
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.lock_outline, color: Colors.white),
+        duration: const Duration(seconds: 3),
+      );
       final products = await cartRepository.getCartProducts(cart.value!.id);
       cartProducts.clear();
       cartProducts.assignAll(products);
@@ -310,7 +321,7 @@ class CartController extends GetxController {
       quantity: newQuantity,
       title: produto.title,
       price: price,
-      imageURL: produto.image,
+      imageUrl: produto.image,
     );
 
     await cartRepository.saveCartProduct(cart.value!.id, cartProduct);

@@ -1,4 +1,4 @@
-import '../services/auth_service.dart';
+import './../services/auth_service.dart';
 import './../models/models.dart';
 
 class AuthRemoteRepository {
@@ -6,7 +6,7 @@ class AuthRemoteRepository {
 
   AuthRemoteRepository(this.authService);
 
-  Future<LogiResponsenModel?> login(LoginRequestModel request) async {
+  Future<LoginResponseModel?> login(LoginRequestModel request) async {
     return await authService.login(request);
   }
 }

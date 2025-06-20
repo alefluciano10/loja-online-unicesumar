@@ -6,16 +6,24 @@ import './../models/models.dart';
 class CartLocalRepository {
   Future<int> saveCart(int userId, String date) async {
     final db = await AppDatabase().database;
-    return await db.insert('cart', {
-      'userId': userId,
-      'date': date,
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(
+      'cart',
+      {
+        'userId': userId,
+        'date': date,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<CartModel?> getCartById(int cartId) async {
     final db = await AppDatabase().database;
     // 1️⃣ Busca o cart
-    final maps = await db.query('cart', where: 'id = ?', whereArgs: [cartId]);
+    final maps = await db.query(
+      'cart',
+      where: 'id = ?',
+      whereArgs: [cartId],
+    );
 
     if (maps.isNotEmpty) {
       final cartMap = maps.first;
@@ -27,9 +35,7 @@ class CartLocalRepository {
         whereArgs: [cartId],
       );
 
-      final products = productMaps
-          .map((map) => CartProductModel.fromJson(map))
-          .toList();
+      final products = productMaps.map((map) => CartProductModel.fromJson(map)).toList();
 
       // 3️⃣ Monta o CartModel completo
       return CartModel(
@@ -45,7 +51,11 @@ class CartLocalRepository {
 
   Future<void> deleteCart(int cartId) async {
     final db = await AppDatabase().database;
-    await db.delete('cart', where: 'id = ?', whereArgs: [cartId]);
+    await db.delete(
+      'cart',
+      where: 'id = ?',
+      whereArgs: [cartId],
+    );
   }
 
   Future<void> removeCartProduct(int cartId, int productId) async {

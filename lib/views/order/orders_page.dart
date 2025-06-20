@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import './../../controllers/controller.dart';
+import './../../controllers/controllers.dart';
 import './../../widgets/widgets.dart';
 import './../../models/models.dart';
 import './order_detail_page.dart';
@@ -14,14 +14,8 @@ class OrdersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NumberFormat currencyFormat = NumberFormat.currency(
-      locale: 'pt_BR',
-      symbol: 'R\$',
-    );
-    final DateFormat dateTimeFormat = DateFormat(
-      'dd/MM/yy \'às\' HH:mm',
-      'pt_BR',
-    );
+    final NumberFormat currencyFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    final DateFormat dateTimeFormat = DateFormat('dd/MM/yy \'às\' HH:mm', 'pt_BR');
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -55,7 +49,10 @@ class OrdersPage extends StatelessWidget {
                   const Text(
                     'Você ainda não realizou nenhuma compra.\nAproveite nossas ofertas!',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black45),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black45,
+                    ),
                   ),
                   const SizedBox(height: 32),
                 ],
@@ -115,10 +112,7 @@ class OrdersPage extends StatelessWidget {
                           color: theme.primaryColor.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
-                          Icons.shopping_bag_outlined,
-                          color: theme.primaryColor,
-                        ),
+                        child: Icon(Icons.shopping_bag_outlined, color: theme.primaryColor),
                       ),
                       const SizedBox(width: 12),
 
@@ -139,10 +133,7 @@ class OrdersPage extends StatelessWidget {
                             Text(
                               '${dateTimeFormat.format(data)} • ${totalItens.toString().padLeft(2, '0')} itens',
                               style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w800,
-                              ),
+                                  fontSize: 12, color: Colors.black54, fontWeight: FontWeight.w800),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -163,11 +154,7 @@ class OrdersPage extends StatelessWidget {
                         children: [
                           OrderStatusBadge(status: pedido.status),
                           const SizedBox(height: 8),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: Colors.grey,
-                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
                         ],
                       ),
                     ],

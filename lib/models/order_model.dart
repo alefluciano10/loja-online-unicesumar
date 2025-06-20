@@ -4,8 +4,7 @@ class OrderModel {
   final int id;
   final int userId;
   final DateTime date;
-  final OrderStatus
-  status; // informar na video aula que foi adicionado o status
+  final OrderStatus status; // informar na video aula que foi adicionado o status
   final List<OrderProductModel> products;
 
   OrderModel({

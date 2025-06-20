@@ -42,9 +42,7 @@ class ProductController extends GetxController {
     try {
       carregando.value = true;
       erro.value = '';
-      final products = await productRepository.fetchProductsByCategory(
-        category,
-      );
+      final products = await productRepository.fetchProductsByCategory(category);
       productList.assignAll(products);
     } catch (e) {
       erro.value = e.toString();

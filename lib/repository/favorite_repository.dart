@@ -5,11 +5,7 @@ class FavoritosRepository {
 
   FavoritosRepository(this.localRepository);
 
-  Future<void> addFavorito(
-    int userId,
-    int productId,
-    String dataFavorito,
-  ) async {
+  Future<void> addFavorito(int userId, int productId, String dataFavorito) async {
     await localRepository.addFavorito(userId, productId, dataFavorito);
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import './../../controllers/controller.dart';
+import './../../controllers/controllers.dart';
 import './../../widgets/widgets.dart';
 import './../../views/views.dart';
 
@@ -56,9 +56,7 @@ class _HomePageState extends State<HomePage> {
                       child: CategoryTile(
                         category: categoria,
                         onTap: () {
-                          Get.toNamed(
-                            '/category/${Uri.encodeComponent(categoria)}',
-                          );
+                          Get.toNamed('/category/${Uri.encodeComponent(categoria)}');
                         },
                       ),
                     );
