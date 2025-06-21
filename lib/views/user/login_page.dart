@@ -71,11 +71,11 @@ class _LoginPageState extends State<LoginPage> {
         borderSide: BorderSide(color: Color(0xFF1A237E), width: 2),
       ),
       errorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
       ),
       focusedErrorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.redAccent, width: 2),
       ),
     );

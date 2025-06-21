@@ -33,9 +33,11 @@ class AuthController extends GetxController {
         logado.value = true;
         box.write('token', response.token);
 
-        // Buscar o user pelo username do LoginRequestModel
-        final userModel =
-            await Get.find<UserController>().userRepository.getUserByUsername(request.username);
+        // Buscar o user localmente (para garantir senha)
+        final userModel = await Get.find<UserController>()
+            .userRepository
+            .localRepository
+            .getUserByName(request.username);
 
         if (userModel != null) {
           box.write('usuario', jsonEncode(userModel.toJson()));
@@ -45,6 +47,9 @@ class AuthController extends GetxController {
           Get.find<FavoritosController>().loadFavoritosForUser(userModel.id);
           Get.find<CartController>().loadCartForUser(userModel.id);
           Get.find<OrderController>().fetchOrdersForUser(userModel.id);
+        } else {
+          erro.value = 'Usuário não encontrado localmente';
+          logado.value = false;
         }
       } else {
         logado.value = false;
@@ -74,5 +79,50 @@ class AuthController extends GetxController {
     );
 
     Get.offAllNamed('/');
+  }
+
+  // Trocar senha
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      carregando.value = true;
+
+      final userController = Get.find<UserController>();
+      final currentUser = userController.user.value;
+
+      if (currentUser == null) {
+        erro.value = 'Usuário não carregado';
+        return false;
+      }
+
+      // Verificar senha atual direto do banco
+      final dbUser = await userController.userRepository.localRepository
+          .getUserById(currentUser.id);
+
+      if (dbUser == null || dbUser.password != oldPassword) {
+        erro.value = 'Senha atual incorreta';
+        return false;
+      }
+
+      // Atualiza a senha localmente
+      final updatedUser = dbUser.copyWith(password: newPassword);
+      userController.user.value = updatedUser;
+
+      // Atualiza no repositório
+      await userController.userRepository.saveUser(updatedUser);
+
+      // Atualiza no storage
+      box.write('usuario', jsonEncode(updatedUser.toJson()));
+
+      erro.value = '';
+      return true;
+    } catch (e) {
+      erro.value = 'Erro ao trocar a senha';
+      return false;
+    } finally {
+      carregando.value = false;
+    }
   }
 }

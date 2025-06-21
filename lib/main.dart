@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import './widgets/widgets.dart';
 import './views/views.dart';
 import 'bindings/initial_binding.dart';
+import 'views/user/ChangePasswordPage.dart';
 
 Future<void> main() async {
   // Registrar os services globais
@@ -91,6 +92,11 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/category/:category', page: () => CategoryPage()),
         GetPage(name: '/signup', page: () => const SignUpPage()),
         GetPage(name: '/login', page: () => const LoginPage()),
+
+        GetPage(
+          name: '/change-password',
+          page: () => const ChangePasswordPage(),
+        ),
       ],
     );
   }

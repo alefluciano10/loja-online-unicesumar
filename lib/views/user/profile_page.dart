@@ -173,6 +173,30 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 22),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 15, 3, 88),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                    ),
+                    onPressed: () {
+                      Get.toNamed('/change-password');
+                    },
+                    icon: const Icon(Icons.lock_reset, color: Colors.white),
+                    label: const Text(
+                      'Trocar Senha',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 22),
+
                 SizedBox(
                   width: double.infinity,
                   height: 50,

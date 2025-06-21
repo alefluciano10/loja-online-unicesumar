@@ -22,7 +22,9 @@ class UserService {
       final Map<String, dynamic> data = json.decode(response.body);
       return UserModel.fromJson(data);
     } else {
-      throw Exception('Erro ao carregar usuário com id $id: ${response.statusCode}');
+      throw Exception(
+        'Erro ao carregar usuário com id $id: ${response.statusCode}',
+      );
     }
   }
 }
