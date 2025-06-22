@@ -1,9 +1,7 @@
-// lib/views/profile/edit_profile_page.dart
 import 'package:flutter_masked_text3/flutter_masked_text3.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import './../../widgets/text_field_widget.dart';
 import './../../controllers/controllers.dart';
 import './../../models/models.dart';
 
@@ -21,7 +19,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _firstnameController = TextEditingController();
   final _lastnameController = TextEditingController();
   final _phoneController = MaskedTextController(
@@ -46,7 +43,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
     _usernameController.text = usuario?.username ?? '';
     _emailController.text = usuario?.email ?? '';
-    _passwordController.text = usuario?.password ?? '';
     _firstnameController.text = usuario?.name.firstname ?? '';
     _lastnameController.text = usuario?.name.lastname ?? '';
     _phoneController.text = usuario?.phone ?? '';
@@ -60,6 +56,54 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 
   @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _firstnameController.dispose();
+    _lastnameController.dispose();
+    _phoneController.dispose();
+    _cityController.dispose();
+    _streetController.dispose();
+    _numberController.dispose();
+    _zipcodeController.dispose();
+    _latController.dispose();
+    _longController.dispose();
+    super.dispose();
+  }
+
+  InputDecoration _inputDecoration(String label, Widget icon) {
+    return InputDecoration(
+      labelText: label,
+      hintText: label,
+      prefixIcon: icon,
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide(color: Colors.grey.shade400, width: 2),
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: Color(0xFF1A237E), width: 2),
+      ),
+      errorBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
+      ),
+      focusedErrorBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        borderSide: BorderSide(color: Colors.redAccent, width: 2),
+      ),
+      hintStyle: const TextStyle(
+        color: Colors.black87,
+        fontSize: 14,
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
@@ -67,7 +111,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         appBar: AppBar(
           title: const Text('Editar Perfil'),
           elevation: 2,
-          backgroundColor: Color.fromARGB(255, 15, 3, 88),
+          backgroundColor: const Color.fromARGB(255, 15, 3, 88),
           foregroundColor: Colors.white,
           bottom: const TabBar(
             indicatorColor: Colors.white,
@@ -103,7 +147,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               style: TextStyle(color: Colors.white),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 15, 3, 88),
+              backgroundColor: const Color.fromARGB(255, 15, 3, 88),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -128,25 +172,50 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _firstnameController,
-          labelText: 'Primeiro Nome',
-          hintText: 'Informe seu primeiro nome',
-          icon: const Icon(Icons.person_outline),
+          decoration: _inputDecoration(
+            'Primeiro Nome',
+            const Icon(Icons.person_outline),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe seu primeiro nome';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 10),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _lastnameController,
-          labelText: 'Sobrenome',
-          hintText: 'Informe seu Sobrenome',
-          icon: const Icon(Icons.person_outline),
+          decoration: _inputDecoration(
+            'Sobrenome',
+            const Icon(Icons.person_outline),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe seu sobrenome';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 10),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _phoneController,
-          labelText: 'Telefone',
-          hintText: 'Informe o telefone',
-          icon: const Icon(Icons.phone_outlined),
+          decoration: _inputDecoration(
+            'Telefone',
+            const Icon(Icons.phone_outlined),
+          ),
+          keyboardType: TextInputType.phone,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe seu telefone';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 24),
         const Text(
@@ -154,27 +223,40 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _usernameController,
-          labelText: 'Username',
-          hintText: 'Informe o login',
-          icon: const Icon(Icons.account_circle_outlined),
+          decoration: _inputDecoration(
+            'Username',
+            const Icon(Icons.account_circle_outlined),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe o nome de usuário';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 10),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _emailController,
-          labelText: 'Email',
-          hintText: 'Informe seu e-mail',
-          icon: const Icon(Icons.email_outlined),
+          decoration: _inputDecoration(
+            'Email',
+            const Icon(Icons.email_outlined),
+          ),
+          keyboardType: TextInputType.emailAddress,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe o e-mail';
+            }
+            if (!GetUtils.isEmail(value.trim())) {
+              return 'E-mail inválido';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 10),
-        TextFieldWidget(
-          controller: _passwordController,
-          labelText: 'Senha',
-          hintText: 'Informe sua senha',
-          isPassword: true,
-          icon: const Icon(Icons.lock_outline),
-        ),
       ],
     );
   }
@@ -189,32 +271,62 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _cityController,
-          labelText: 'Cidade',
-          hintText: 'Informe a cidade',
-          icon: const Icon(Icons.location_city),
+          decoration: _inputDecoration(
+            'Cidade',
+            const Icon(Icons.location_city),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe a cidade';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 10),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _streetController,
-          labelText: 'Rua',
-          hintText: 'Informe a rua',
-          icon: const Icon(Icons.streetview),
+          decoration: _inputDecoration('Rua', const Icon(Icons.streetview)),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe a rua';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 10),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _numberController,
-          labelText: 'Número',
-          hintText: 'Informe o número',
-          icon: const Icon(Icons.numbers),
+          decoration: _inputDecoration('Número', const Icon(Icons.numbers)),
+          keyboardType: TextInputType.number,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe o número';
+            }
+            if (int.tryParse(value.trim()) == null) {
+              return 'Número inválido';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 10),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _zipcodeController,
-          labelText: 'CEP',
-          hintText: 'Informe o CEP',
-          icon: const Icon(Icons.local_post_office),
+          decoration: _inputDecoration(
+            'CEP',
+            const Icon(Icons.local_post_office),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe o CEP';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 24),
         const Text(
@@ -222,18 +334,34 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _latController,
-          labelText: 'Latitude',
-          hintText: 'Informe a latitude',
-          icon: const Icon(Icons.my_location),
+          decoration: _inputDecoration(
+            'Latitude',
+            const Icon(Icons.my_location),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe a latitude';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 10),
-        TextFieldWidget(
+
+        TextFormField(
           controller: _longController,
-          labelText: 'Longitude',
-          hintText: 'Informe a longitude',
-          icon: const Icon(Icons.my_location),
+          decoration: _inputDecoration(
+            'Longitude',
+            const Icon(Icons.my_location),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe a longitude';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 10),
       ],
@@ -241,10 +369,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 
   Future<void> _saveProfile() async {
+    if (!_formKey.currentState!.validate()) {
+      // Formulário inválido
+      return;
+    }
+
     final updatedUser = userController.user.value!.copyWith(
       username: _usernameController.text.trim(),
+      password: userController.user.value!.password, // Mantém a senha atual
       email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
       name: NameModel(
         firstname: _firstnameController.text.trim(),
         lastname: _lastnameController.text.trim(),
@@ -277,7 +410,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         margin: const EdgeInsets.all(16),
         borderRadius: 12,
       );
-      Get.back();
+      await Future.delayed(const Duration(seconds: 1));
+      Get.until((route) => Get.currentRoute == '/');
     } else {
       Get.snackbar(
         'Erro',

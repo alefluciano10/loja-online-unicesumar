@@ -1,10 +1,13 @@
 import './../models/models.dart';
 
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+
 class UserModel {
   final int id;
   final String email;
   final String username;
-  final String password;
+  final String password; // armazenará a senha já hashada
   final NameModel name;
   final AddressModel address;
   final String phone;
@@ -18,6 +21,34 @@ class UserModel {
     required this.address,
     required this.phone,
   });
+
+  /// Gera hash SHA-256 da senha plain-text
+  static String hashPassword(String password) {
+    final bytes = utf8.encode(password.trim());
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  /// Cria UserModel com senha plain-text, já hashando antes de armazenar
+  factory UserModel.create({
+    required int id,
+    required String email,
+    required String username,
+    required String plainPassword,
+    required NameModel name,
+    required AddressModel address,
+    required String phone,
+  }) {
+    return UserModel(
+      id: id,
+      email: email,
+      username: username,
+      password: hashPassword(plainPassword),
+      name: name,
+      address: address,
+      phone: phone,
+    );
+  }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -43,7 +74,6 @@ class UserModel {
     };
   }
 
-  // Adiciona aqui:
   UserModel copyWith({
     int? id,
     String? email,

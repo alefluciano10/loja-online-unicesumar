@@ -1,9 +1,9 @@
-// -------------------- SIGNUP PAGE --------------------
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text3/flutter_masked_text3.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import './../../controllers/controllers.dart';
-import './../../widgets/widgets.dart';
 import './../../models/models.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -14,70 +14,18 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final UserController usuarioController = Get.find<UserController>();
+  final UserController userController = Get.find<UserController>();
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _firstnameController = TextEditingController();
+  final _lastnameController = TextEditingController();
+  final _phoneController = MaskedTextController(mask: '(00)00000-0000');
 
-  bool _isLoading = false;
-
-  Future<void> _signup() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isLoading = true);
-
-    final newUser = UserModel(
-      id: 0,
-      username: usernameController.text.trim(),
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-      address: AddressModel(
-        city: '',
-        street: '',
-        number: 0,
-        zipcode: '',
-        geolocation: GeolocationModel(lat: '', long: ''),
-      ),
-      name: NameModel(firstname: '', lastname: ''),
-      phone: '',
-    );
-
-    await usuarioController.saveUser(newUser);
-
-    setState(() => _isLoading = false);
-
-    if (usuarioController.erro.value.isEmpty &&
-        usuarioController.user.value != null) {
-      Get.snackbar(
-        'Cadastro realizado',
-        'Sua conta foi criada com sucesso!',
-        colorText: Colors.white,
-        backgroundColor: Colors.green,
-        snackPosition: SnackPosition.TOP,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-        duration: const Duration(seconds: 4),
-      );
-      Get.offAllNamed('/login');
-    } else {
-      Get.snackbar(
-        'Erro no cadastro',
-        usuarioController.erro.value.isNotEmpty
-            ? usuarioController.erro.value
-            : 'Falha ao criar a conta.',
-        colorText: Colors.white,
-        backgroundColor: Colors.redAccent,
-        snackPosition: SnackPosition.TOP,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-        duration: const Duration(seconds: 4),
-      );
-    }
-  }
+  final RxBool isLoading = false.obs;
+  final RxBool obscurePassword = true.obs;
 
   InputDecoration _inputDecoration(String label, Icon icon) {
     return InputDecoration(
@@ -92,7 +40,7 @@ class _SignUpPageState extends State<SignUpPage> {
         fontStyle: FontStyle.italic,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.grey.shade400, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
@@ -101,21 +49,66 @@ class _SignUpPageState extends State<SignUpPage> {
         borderSide: BorderSide(color: Color(0xFF1A237E), width: 2),
       ),
       errorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
       ),
       focusedErrorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderRadius: BorderRadius.all(Radius.circular(15)),
         borderSide: BorderSide(color: Colors.redAccent, width: 2),
       ),
     );
+  }
+
+  Future<void> _onSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (isLoading.value) return;
+
+    final novoUsuario = UserModel(
+      id: 0,
+      username: _usernameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: UserModel.hashPassword(_passwordController.text.trim()),
+      name: NameModel(
+        firstname: _firstnameController.text.trim(),
+        lastname: _lastnameController.text.trim(),
+      ),
+      phone: _phoneController.text.trim(),
+      address: AddressModel(
+        city: '',
+        street: '',
+        number: 0,
+        zipcode: '',
+        geolocation: GeolocationModel(lat: '', long: ''),
+      ),
+    );
+
+    isLoading.value = true;
+    EasyLoading.show(
+      status: 'Cadastrando...',
+      maskType: EasyLoadingMaskType.black,
+    );
+
+    try {
+      final usuarioSalvo = await userController.userRepository.saveUser(
+        novoUsuario,
+      );
+      userController.user.value = usuarioSalvo;
+
+      EasyLoading.showSuccess('Cadastro realizado com sucesso!');
+      await Future.delayed(const Duration(seconds: 2));
+      Get.offAllNamed('/login');
+    } catch (e) {
+      EasyLoading.showError('Erro ao cadastrar: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Criar Conta'),
+        title: const Text('Cadastro'),
         leading: Navigator.canPop(context)
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -129,23 +122,22 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 15),
-                const Icon(Icons.shopping_bag, size: 80, color: Colors.orange),
+                const SizedBox(height: 40),
+                const Icon(Icons.person_add, size: 80, color: Colors.orange),
                 const SizedBox(height: 16),
                 const Text(
-                  'Seja Bem-vindo(a)!',
+                  'Crie sua conta!',
                   style: TextStyle(
                     fontSize: 24,
-                    fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.bold,
                     color: Colors.orange,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Crie sua conta para começar',
+                  'Preencha seus dados para continuar',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.black54,
@@ -155,113 +147,121 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 32),
 
                 TextFormField(
-                  controller: usernameController,
-                  textInputAction: TextInputAction.next,
-                  autofillHints: const [AutofillHints.username],
+                  controller: _firstnameController,
+                  decoration: _inputDecoration(
+                    'Primeiro Nome',
+                    const Icon(Icons.badge),
+                  ),
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Informe o primeiro nome' : null,
+                ),
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _lastnameController,
+                  decoration: _inputDecoration(
+                    'Sobrenome',
+                    const Icon(Icons.badge_outlined),
+                  ),
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Informe o sobrenome' : null,
+                ),
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _usernameController,
                   decoration: _inputDecoration(
                     'Usuário',
                     const Icon(Icons.person),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Informe seu nome de usuário';
-                    }
-                    return null;
-                  },
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Informe o username' : null,
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
-                  controller: emailController,
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.email],
+                  controller: _emailController,
                   decoration: _inputDecoration(
-                    'E-mail',
+                    'Email',
                     const Icon(Icons.email),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Informe seu e-mail';
-                    }
-                    if (!GetUtils.isEmail(value.trim())) {
-                      return 'E-mail inválido';
-                    }
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return 'Informe o email';
+                    if (!v.contains('@')) return 'Email inválido';
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  textInputAction: TextInputAction.done,
-                  autofillHints: const [AutofillHints.newPassword],
-                  onFieldSubmitted: (_) => _signup(),
-                  decoration: _inputDecoration('Senha', const Icon(Icons.lock)),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Informe uma senha';
-                    }
-                    if (value.trim().length < 8) {
-                      return 'A senha deve ter pelo menos 8 caracteres';
-                    }
-                    return null;
-                  },
+                  controller: _phoneController,
+                  decoration: _inputDecoration(
+                    'Telefone',
+                    const Icon(Icons.phone),
+                  ),
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Informe o telefone' : null,
+                ),
+
+                const SizedBox(height: 16),
+
+                Obx(
+                  () => TextFormField(
+                    controller: _passwordController,
+                    obscureText: obscurePassword.value,
+                    decoration:
+                        _inputDecoration(
+                          'Senha',
+                          const Icon(Icons.lock),
+                        ).copyWith(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              obscurePassword.value
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () =>
+                                obscurePassword.value = !obscurePassword.value,
+                          ),
+                        ),
+                    validator: (v) => v == null || v.length < 8
+                        ? 'Senha deve ter ao menos 8 caracteres'
+                        : null,
+                  ),
                 ),
                 const SizedBox(height: 24),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.person_add, color: Colors.white),
-                    label: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Cadastrar',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 15, 3, 88),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: _isLoading ? null : _signup,
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Já tem uma conta? ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black54,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    TextButton(
-                      onPressed: () => Get.toNamed('/login'),
-                      child: const Text(
-                        'Entrar',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 17, 2, 134),
+                Obx(
+                  () => SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      icon: isLoading.value
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.check_circle, color: Colors.white),
+                      label: Text(
+                        isLoading.value ? 'Cadastrando...' : 'Cadastrar',
+                        style: const TextStyle(
                           fontSize: 16,
+                          color: Colors.white,
                         ),
                       ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0F0358),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: isLoading.value ? null : _onSubmit,
                     ),
-                  ],
-                ),
-
-                PrimaryButton(
-                  text: 'Continuar comprando',
-                  icon: Icons.shopping_cart_outlined,
-                  onPressed: () => Get.offAllNamed('/'),
+                  ),
                 ),
               ],
             ),

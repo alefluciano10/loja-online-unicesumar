@@ -1,9 +1,8 @@
 import 'package:get_storage/get_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
-
 import './../repository/repository.dart';
+import 'package:flutter/material.dart';
 import './../models/models.dart';
 import './controllers.dart';
 
@@ -33,23 +32,15 @@ class AuthController extends GetxController {
         logado.value = true;
         box.write('token', response.token);
 
-        // Buscar o user localmente (para garantir senha)
-        final userModel = await Get.find<UserController>()
-            .userRepository
-            .localRepository
-            .getUserByName(request.username);
+        // Buscar o user pelo username do LoginRequestModel
+        final userModel = await Get.find<UserController>().userRepository
+            .getUserByUsername(request.username);
 
         if (userModel != null) {
           box.write('usuario', jsonEncode(userModel.toJson()));
-          Get.find<UserController>().user.value = userModel;
-
-          // Carregar dados do user:
-          Get.find<FavoritosController>().loadFavoritosForUser(userModel.id);
-          Get.find<CartController>().loadCartForUser(userModel.id);
-          Get.find<OrderController>().fetchOrdersForUser(userModel.id);
-        } else {
-          erro.value = 'Usuário não encontrado localmente';
-          logado.value = false;
+          // 👉 Garante que ao entrar vá direto para a aba Home
+          Get.find<MainNavigationController>().changePage(0);
+          Get.offAllNamed('/');
         }
       } else {
         logado.value = false;
@@ -70,7 +61,7 @@ class AuthController extends GetxController {
       'Logout',
       'Você saiu da sua conta com sucesso.',
       colorText: Colors.white,
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.green,
       snackPosition: SnackPosition.TOP,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
@@ -81,7 +72,6 @@ class AuthController extends GetxController {
     Get.offAllNamed('/');
   }
 
-  // Trocar senha
   Future<bool> changePassword({
     required String oldPassword,
     required String newPassword,
@@ -97,26 +87,40 @@ class AuthController extends GetxController {
         return false;
       }
 
-      // Verificar senha atual direto do banco
       final dbUser = await userController.userRepository.localRepository
           .getUserById(currentUser.id);
 
-      if (dbUser == null || dbUser.password != oldPassword) {
+      if (dbUser == null ||
+          dbUser.password.trim() !=
+              UserModel.hashPassword(oldPassword.trim())) {
         erro.value = 'Senha atual incorreta';
         return false;
       }
+      if (newPassword.trim().isEmpty) {
+        erro.value = 'Nova senha não pode ser vazia';
+        return false;
+      }
 
-      // Atualiza a senha localmente
-      final updatedUser = dbUser.copyWith(password: newPassword);
+      final updatedUser = dbUser.copyWith(
+        password: UserModel.hashPassword(newPassword.trim()),
+      );
+
       userController.user.value = updatedUser;
 
-      // Atualiza no repositório
       await userController.userRepository.saveUser(updatedUser);
-
-      // Atualiza no storage
       box.write('usuario', jsonEncode(updatedUser.toJson()));
 
-      erro.value = '';
+      Get.snackbar(
+        'Sucesso',
+        'Senha alterada com sucesso.',
+        colorText: Colors.white,
+        backgroundColor: Colors.black87,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.logout, color: Colors.white),
+        duration: const Duration(seconds: 3),
+      );
       return true;
     } catch (e) {
       erro.value = 'Erro ao trocar a senha';

@@ -80,7 +80,11 @@ class CartPage extends StatelessWidget {
                   const Text(
                     'Adicione produtos ao carrinho para continuar.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   PrimaryButton(

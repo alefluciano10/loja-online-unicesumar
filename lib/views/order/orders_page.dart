@@ -55,7 +55,11 @@ class OrdersPage extends StatelessWidget {
                   const Text(
                     'Você ainda não realizou nenhuma compra.\nAproveite nossas ofertas!',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black45),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black45,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                   const SizedBox(height: 32),
                 ],

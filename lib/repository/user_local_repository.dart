@@ -1,6 +1,6 @@
 import 'package:sqflite/sqlite_api.dart';
-import '../database/app_database.dart';
-import '../models/models.dart';
+import './../database/app_database.dart';
+import './../models/models.dart';
 
 class UserLocalRepository {
   Future<UserModel?> getUserById(int id) async {
@@ -8,8 +8,24 @@ class UserLocalRepository {
     final maps = await db.query('users', where: 'id = ?', whereArgs: [id]);
 
     if (maps.isNotEmpty) {
-      final map = maps.first;
-      return _fromMap(map);
+      return _fromMap(maps.first);
+    }
+    return null;
+  }
+
+  Future<UserModel?> getUserByUsernameAndPassword(
+    String username,
+    String hashedPassword,
+  ) async {
+    final db = await AppDatabase().database;
+    final maps = await db.query(
+      'users',
+      where: 'username = ? AND password = ?',
+      whereArgs: [username.trim(), hashedPassword],
+    );
+
+    if (maps.isNotEmpty) {
+      return _fromMap(maps.first);
     }
 
     return null;
@@ -20,52 +36,60 @@ class UserLocalRepository {
     final maps = await db.query(
       'users',
       where: 'username = ?',
-      whereArgs: [userName],
+      whereArgs: [userName.trim()],
     );
 
     if (maps.isNotEmpty) {
-      final map = maps.first;
-      return _fromMap(map);
+      return _fromMap(maps.first);
     }
-
     return null;
-  }
-
-  Future<void> saveUser(UserModel user) async {
-    final db = await AppDatabase().database;
-
-    // Verifica se já existe
-    final existing = await getUserById(user.id);
-    final data = _toMap(user);
-
-    if (existing == null) {
-      await db.insert(
-        'users',
-        data,
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    } else {
-      await db.update('users', data, where: 'id = ?', whereArgs: [user.id]);
-    }
   }
 
   Future<UserModel?> login(LoginRequestModel request) async {
     final db = await AppDatabase().database;
     final maps = await db.query(
-      'auth',
-      where: 'username = ? AND password = ?',
-      whereArgs: [request.username, request.password],
+      'users',
+      where: 'username = ?',
+      whereArgs: [request.username.trim()],
     );
 
-    if (maps.isNotEmpty) {
-      final map = maps.first;
-      return _fromMap(map);
-    }
+    if (maps.isEmpty) return null;
 
-    return null;
+    final user = _fromMap(maps.first);
+
+    final hashedInputPassword = UserModel.hashPassword(request.password);
+    return user.password == hashedInputPassword ? user : null;
   }
 
-  // Helper para converter Map em UserModel
+  Future<int> insertUser(UserModel user) async {
+    final db = await AppDatabase().database;
+    final data = _toMap(user);
+    data.remove('id'); // Banco irá gerar automaticamente
+
+    return await db.insert(
+      'users',
+      data,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> updateUser(UserModel user) async {
+    final db = await AppDatabase().database;
+    final data = _toMap(user)
+      ..['id'] = user.id; // adiciona id manualmente para update
+    await db.update('users', data, where: 'id = ?', whereArgs: [user.id]);
+  }
+
+  Future<UserModel> saveUser(UserModel user) async {
+    if (user.id == 0) {
+      final id = await insertUser(user);
+      return user.copyWith(id: id);
+    } else {
+      await updateUser(user);
+      return user;
+    }
+  }
+
   UserModel _fromMap(Map<String, Object?> map) {
     return UserModel(
       id: map['id'] as int,
@@ -90,10 +114,9 @@ class UserLocalRepository {
     );
   }
 
-  // Helper para converter UserModel em Map
   Map<String, Object?> _toMap(UserModel user) {
     return {
-      'id': user.id,
+      // 'id' será adicionado no update manualmente
       'email': user.email,
       'username': user.username,
       'password': user.password,

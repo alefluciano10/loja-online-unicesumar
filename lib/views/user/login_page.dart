@@ -1,9 +1,8 @@
-// -------------------- LOGIN PAGE --------------------
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import './../../controllers/controllers.dart';
-import './../../widgets/widgets.dart';
 import './../../models/models.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,33 +19,39 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  final RxBool isLoading = false.obs;
+  final RxBool obscurePassword = true.obs; // 👁️ Controle da visibilidade
+
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
+    if (isLoading.value) return;
 
     final request = LoginRequestModel(
       username: usernameController.text.trim(),
-      password: passwordController.text.trim(),
+      password: UserModel.hashPassword(passwordController.text.trim()),
     );
 
-    await authController.login(request);
+    EasyLoading.show(
+      status: 'Entrando...',
+      maskType: EasyLoadingMaskType.black,
+    );
 
-    if (authController.logado.value) {
-      Get.offAllNamed('/');
-    } else {
-      Get.snackbar(
-        'Erro de login',
-        authController.erro.value.isNotEmpty
-            ? authController.erro.value
-            : 'Falha ao fazer login.',
-        colorText: Colors.white,
-        backgroundColor: Colors.red,
-        snackPosition: SnackPosition.TOP,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-        duration: const Duration(seconds: 4),
-      );
-    }
+    try {
+      await authController.login(request);
+      EasyLoading.dismiss();
+
+      if (authController.logado.value) {
+        Get.offAllNamed('/');
+      } else {
+        EasyLoading.showError(
+          authController.erro.value.isNotEmpty
+              ? authController.erro.value
+              : 'Falha ao fazer login.',
+        );
+      }
+    } catch (e) {
+      EasyLoading.showError('Erro inesperado. Tente novamente.');
+    } finally {}
   }
 
   InputDecoration _inputDecoration(String label, Icon icon) {
@@ -82,6 +87,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -102,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 40),
-                const Icon(Icons.shopping_bag, size: 80, color: Colors.orange),
+                const Icon(Icons.person, size: 80, color: Colors.orange),
                 const SizedBox(height: 16),
                 const Text(
                   'Bem-vindo(a) de volta!',
@@ -123,8 +135,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
-
-                // Username
                 TextFormField(
                   controller: usernameController,
                   textInputAction: TextInputAction.next,
@@ -142,32 +152,69 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Password
-                TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  textInputAction: TextInputAction.done,
-                  autofillHints: const [AutofillHints.password],
-                  onFieldSubmitted: (_) => _login(),
-                  decoration: _inputDecoration('Senha', const Icon(Icons.lock)),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Informe sua senha';
-                    }
-                    return null;
-                  },
+                // 👁️ Campo de senha com botão para mostrar
+                Obx(
+                  () => TextFormField(
+                    controller: passwordController,
+                    obscureText: obscurePassword.value,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.password],
+                    onFieldSubmitted: (_) => _login(),
+                    decoration:
+                        _inputDecoration(
+                          'Senha',
+                          const Icon(Icons.lock),
+                        ).copyWith(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              obscurePassword.value
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              obscurePassword.value = !obscurePassword.value;
+                            },
+                          ),
+                        ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Informe sua senha';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
                 const SizedBox(height: 24),
-
                 Obx(
-                  () => LoadingButton(
+                  () => SizedBox(
                     width: double.infinity,
                     height: 50,
-                    text: 'Entrar',
-                    icon: Icons.login,
-                    backgroundColor: Color.fromARGB(255, 15, 3, 88),
-                    isLoading: authController.carregando.value,
-                    onPressed: _login,
+                    child: ElevatedButton.icon(
+                      icon: isLoading.value
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.login, color: Colors.white),
+                      label: Text(
+                        isLoading.value ? 'Entrando...' : 'Entrar',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 15, 3, 88),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: isLoading.value ? null : _login,
+                    ),
                   ),
                 ),
 
@@ -183,7 +230,6 @@ class _LoginPageState extends State<LoginPage> {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                    const SizedBox(width: 4),
                     TextButton(
                       onPressed: () => Get.toNamed('/signup'),
                       child: const Text(
@@ -195,12 +241,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ],
-                ),
-
-                PrimaryButton(
-                  text: 'Continuar comprando',
-                  icon: Icons.shopping_cart_outlined,
-                  onPressed: () => Get.offAllNamed('/'),
                 ),
               ],
             ),

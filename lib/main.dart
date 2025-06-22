@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -6,17 +7,35 @@ import 'package:intl/date_symbol_data_local.dart';
 import './widgets/widgets.dart';
 import './views/views.dart';
 import 'bindings/initial_binding.dart';
+import 'custom/custom_animation.dart';
 import 'views/user/ChangePasswordPage.dart';
 
 Future<void> main() async {
   // Registrar os services globais
 
   WidgetsFlutterBinding.ensureInitialized();
-
+  configLoading(); // ✅ aplica estilo ao EasyLoading
   await GetStorage.init(); // Inicializa o GetStorage
   // Inicializa locale para pt_BR
   await initializeDateFormatting('pt_BR', null);
   runApp(const MyApp());
+}
+
+void configLoading() {
+  EasyLoading.instance
+    ..displayDuration = const Duration(milliseconds: 2000)
+    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+    ..loadingStyle = EasyLoadingStyle.dark
+    ..indicatorSize = 45.0
+    ..radius = 10.0
+    ..progressColor = Colors.yellow
+    ..backgroundColor = Colors.white
+    ..indicatorColor = Colors.yellow
+    ..textColor = Colors.yellow
+    ..maskColor = Colors.green.withValues()
+    ..userInteractions = true
+    ..dismissOnTap = false
+    ..customAnimation = CustomAnimation();
 }
 
 class MyApp extends StatelessWidget {
@@ -25,6 +44,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
       title: 'Loja de Produtos',
       theme: ThemeData(
@@ -82,6 +102,7 @@ class MyApp extends StatelessWidget {
       // 👉 TIRA ISSO:
       // home: MainNavigationPage(),
       initialRoute: '/',
+      initialBinding: InitialBinding(),
       getPages: [
         GetPage(
           name: '/',
@@ -92,7 +113,6 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/category/:category', page: () => CategoryPage()),
         GetPage(name: '/signup', page: () => const SignUpPage()),
         GetPage(name: '/login', page: () => const LoginPage()),
-
         GetPage(
           name: '/change-password',
           page: () => const ChangePasswordPage(),

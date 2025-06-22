@@ -50,7 +50,11 @@ class ProfilePage extends StatelessWidget {
                     const Text(
                       'Faça login para acessar seu perfil, favoritos e pedidos.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.black54),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
                     const SizedBox(height: 36),
                     SizedBox(

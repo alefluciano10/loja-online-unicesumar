@@ -17,7 +17,10 @@ class AuthService {
       return LoginResponseModel.fromJson(data);
     } else {
       // Tentativa de buscar usuário localmente
-      final localUser = await getUserByNameAndPassword(request.username, request.password);
+      final localUser = await getUserByNameAndPassword(
+        request.username,
+        request.password,
+      );
       if (localUser != null) {
         return LoginResponseModel(
           token:
@@ -25,12 +28,14 @@ class AuthService {
         );
       }
 
-      // Caso não encontre localmente, lança exceção original
-      throw Exception('Erro no login: ${response.statusCode}');
+      return LoginResponseModel(token: '');
     }
   }
 
-  Future<UserModel?> getUserByNameAndPassword(String userName, String password) async {
+  Future<UserModel?> getUserByNameAndPassword(
+    String userName,
+    String password,
+  ) async {
     final db = await AppDatabase().database;
     final maps = await db.query(
       'users',

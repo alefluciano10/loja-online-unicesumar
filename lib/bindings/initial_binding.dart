@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 import '../controllers/controllers.dart';
-import '../models/models.dart';
+
 import '../repository/repository.dart';
 import '../services/services.dart';
 
@@ -27,7 +24,10 @@ class InitialBinding extends Bindings {
     final authLocalRepository = AuthLocalRepository();
 
     // Repositories
-    final authRepository = AuthRepository(authLocalRepository, authRemoteRepository);
+    final authRepository = AuthRepository(
+      authLocalRepository,
+      authRemoteRepository,
+    );
     Get.put(authRepository);
 
     final productRepository = ProductRepository(productRemoteRepository);
@@ -41,29 +41,31 @@ class InitialBinding extends Bindings {
 
     final userLocalRepository = UserLocalRepository();
     final userRemoteRepository = UserRemoteRepository(userService);
-    final userRepository = UserRepository(userLocalRepository, userRemoteRepository);
+    final userRepository = UserRepository(
+      userLocalRepository,
+      userRemoteRepository,
+    );
     Get.put(userRepository);
 
     final cartLocalRepository = CartLocalRepository();
     final cartProductsLocalRepository = CartProductsLocalRepository();
-    final cartRepository = CartRepository(cartLocalRepository, cartProductsLocalRepository);
+    final cartRepository = CartRepository(
+      cartLocalRepository,
+      cartProductsLocalRepository,
+    );
     Get.put(cartRepository);
     Get.put(CartController(cartRepository: cartRepository)); // OK
 
     final favoritosRepository = FavoritosRepository(FavoriteLocalRepository());
     Get.put(favoritosRepository);
-    Get.put(FavoritosController(favoritosRepository: favoritosRepository)); // ✅ ADD AQUI
+    Get.put(
+      FavoritosController(favoritosRepository: favoritosRepository),
+    ); // ✅ ADD AQUI
 
     // Controllers globais
     Get.put(MainNavigationController());
 
-    Get.put(HomeController(
-      bannerRepository: bannerRepository,
-      categoryRepository: categoryRepository,
-      productRepository: productRepository,
-    ));
-
-    Get.put(UserController(userRepository: userRepository)); // OK
+    Get.put(UserController(userRepository: userRepository));
 
     Get.put(BannerController(bannerRepository: bannerRepository));
     Get.put(CategoryController(categoryRepository: categoryRepository));
@@ -74,25 +76,20 @@ class InitialBinding extends Bindings {
     Get.put(OrderService());
     Get.put(OrderRemoteRepository(Get.find<OrderService>()));
     Get.put(OrderLocalRepository());
-    Get.put(OrderRepository(
-      Get.find<OrderLocalRepository>(),
-      Get.find<OrderRemoteRepository>(),
-    ));
+    Get.put(
+      OrderRepository(
+        Get.find<OrderLocalRepository>(),
+        Get.find<OrderRemoteRepository>(),
+      ),
+    );
     Get.put(OrderController(orderRepository: Get.find<OrderRepository>()));
 
-    // Carregar dados do usuario se tiver
-    final box = GetStorage();
-    String? userJson = box.read('usuario');
-
-    if (userJson != null) {
-      UserModel user = UserModel.fromJson(jsonDecode(userJson));
-      Get.find<UserController>().user.value = user;
-      Get.find<AuthController>().logado.value = true;
-
-      // Carregar dados do user:
-      Get.find<FavoritosController>().loadFavoritosForUser(user.id);
-      Get.find<CartController>().loadCartForUser(user.id);
-      Get.find<OrderController>().fetchOrdersForUser(user.id);
-    }
+    Get.put(
+      HomeController(
+        bannerRepository: bannerRepository,
+        categoryRepository: categoryRepository,
+        productRepository: productRepository,
+      ),
+    );
   }
 }
