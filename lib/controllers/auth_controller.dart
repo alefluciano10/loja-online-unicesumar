@@ -32,12 +32,21 @@ class AuthController extends GetxController {
         logado.value = true;
         box.write('token', response.token);
 
+        final userController = Get.find<UserController>();
+
+        // Limpa dados antigos antes de salvar o novo usuário
+        userController.user.value = null;
+        userController.box.remove('usuario');
+
         // Buscar o user pelo username do LoginRequestModel
         final userModel = await Get.find<UserController>().userRepository
             .getUserByUsername(request.username);
 
         if (userModel != null) {
-          box.write('usuario', jsonEncode(userModel.toJson()));
+          // Atualiza o estado e storage com o usuário novo
+          userController.user.value = userModel;
+          userController.box.write('usuario', jsonEncode(userModel.toJson()));
+
           // 👉 Garante que ao entrar vá direto para a aba Home
           Get.find<MainNavigationController>().changePage(0);
           Get.offAllNamed('/');

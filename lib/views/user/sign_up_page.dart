@@ -187,7 +187,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Informe o email';
-                    if (!v.contains('@')) return 'Email inválido';
+                    if (!RegExp(r"^[\w\.-]+@[\w\.-]+\.\w+$").hasMatch(v)) {
+                      return 'Email inválido';
+                    }
                     return null;
                   },
                 ),
@@ -199,10 +201,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     'Telefone',
                     const Icon(Icons.phone),
                   ),
-                  validator: (v) =>
-                      v == null || v.isEmpty ? 'Informe o telefone' : null,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return 'Informe o telefone';
+                    if (v.replaceAll(RegExp(r'\D'), '').length < 11) {
+                      return 'Telefone incompleto';
+                    }
+                    return null;
+                  },
                 ),
-
                 const SizedBox(height: 16),
 
                 Obx(
