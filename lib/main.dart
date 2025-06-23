@@ -8,7 +8,6 @@ import './widgets/widgets.dart';
 import './views/views.dart';
 import 'bindings/initial_binding.dart';
 import 'custom/custom_animation.dart';
-import 'views/user/ChangePasswordPage.dart';
 
 Future<void> main() async {
   // Registrar os services globais
