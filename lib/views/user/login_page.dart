@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 
 import './../../controllers/controllers.dart';
 import './../../models/models.dart';
@@ -16,19 +16,28 @@ class _LoginPageState extends State<LoginPage> {
   final AuthController authController = Get.find<AuthController>();
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
 
   final RxBool isLoading = false.obs;
-  final RxBool obscurePassword = true.obs; // 👁️ Controle da visibilidade
+  final RxBool obscurePassword = true.obs;
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     if (isLoading.value) return;
 
+    isLoading.value = true;
+
     final request = LoginRequestModel(
       username: usernameController.text.trim(),
-      password: UserModel.hashPassword(passwordController.text.trim()),
+      password: passwordController.text.trim(), // ❗ Senha pura
     );
 
     EasyLoading.show(
@@ -51,7 +60,9 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       EasyLoading.showError('Erro inesperado. Tente novamente.');
-    } finally {}
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   InputDecoration _inputDecoration(String label, Icon icon) {
@@ -87,13 +98,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
-  void dispose() {
-    usernameController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -110,6 +114,7 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -151,8 +156,6 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
                 const SizedBox(height: 16),
-
-                // 👁️ Campo de senha com botão para mostrar
                 Obx(
                   () => TextFormField(
                     controller: passwordController,
@@ -191,6 +194,9 @@ class _LoginPageState extends State<LoginPage> {
                     height: 50,
                     child: ElevatedButton.icon(
                       icon: isLoading.value
+                          ? const SizedBox.shrink()
+                          : const Icon(Icons.login, color: Colors.white),
+                      label: isLoading.value
                           ? const SizedBox(
                               width: 22,
                               height: 22,
@@ -199,14 +205,13 @@ class _LoginPageState extends State<LoginPage> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Icon(Icons.login, color: Colors.white),
-                      label: Text(
-                        isLoading.value ? 'Entrando...' : 'Entrar',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
-                      ),
+                          : const Text(
+                              'Entrar',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 15, 3, 88),
                         shape: RoundedRectangleBorder(
@@ -217,7 +222,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

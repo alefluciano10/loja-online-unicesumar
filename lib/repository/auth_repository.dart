@@ -15,7 +15,9 @@ class AuthRepository {
 
   Future<LoginResponseModel?> login(LoginRequestModel request) async {
     // Primeiro tenta buscar local pelo username
-    LoginResponseModel? auth = await localRepository.getAuthByUsername(request.username);
+    LoginResponseModel? auth = await localRepository.getAuthByUsername(
+      request.username,
+    );
 
     if (auth != null) {
       if (kDebugMode) {

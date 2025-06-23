@@ -22,6 +22,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   bool showNew = false;
   bool showConfirm = false;
 
+  @override
+  void dispose() {
+    oldPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
