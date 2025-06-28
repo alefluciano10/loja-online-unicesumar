@@ -20,20 +20,26 @@ class OrderLocalRepository {
         );
 
         final products = productMaps
-            .map((p) => OrderProductModel(
-                  productId: p['productId'] as int,
-                  quantity: p['quantity'] as int,
-                  price: p['price'] as double,
-                ))
+            .map(
+              (p) => OrderProductModel(
+                productId: p['productId'] as int,
+                quantity: p['quantity'] as int,
+                price: p['price'] as double,
+              ),
+            )
             .toList();
 
-        orders.add(OrderModel(
-          id: orderMap['id'] as int,
-          userId: orderMap['userId'] as int,
-          date: DateTime.parse(orderMap['date'] as String),
-          status: OrderStatusExtension.fromString(orderMap['status'] as String),
-          products: products,
-        ));
+        orders.add(
+          OrderModel(
+            id: orderMap['id'] as int,
+            userId: orderMap['userId'] as int,
+            date: DateTime.parse(orderMap['date'] as String),
+            status: OrderStatusExtension.fromString(
+              orderMap['status'] as String,
+            ),
+            products: products,
+          ),
+        );
       }
     } catch (e) {
       if (kDebugMode) {
@@ -50,16 +56,12 @@ class OrderLocalRepository {
     try {
       // Salva pedido
       try {
-        await db.insert(
-          'orders',
-          {
-            'id': order.id,
-            'userId': order.userId,
-            'date': order.date.toIso8601String(),
-            'status': order.status.label,
-          },
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
+        await db.insert('orders', {
+          'id': order.id,
+          'userId': order.userId,
+          'date': order.date.toIso8601String(),
+          'status': order.status.label,
+        }, conflictAlgorithm: ConflictAlgorithm.replace);
       } catch (e) {
         throw Exception('Erro ao salvar pedido: $e');
       }
@@ -77,15 +79,12 @@ class OrderLocalRepository {
 
       // Salva produtos do pedido
       for (var product in order.products) {
-        await db.insert(
-          'order_products',
-          {
-            'orderId': order.id,
-            'productId': product.productId,
-            'quantity': product.quantity,
-            'price': product.price,
-          },
-        );
+        await db.insert('order_products', {
+          'orderId': order.id,
+          'productId': product.productId,
+          'quantity': product.quantity,
+          'price': product.price,
+        });
       }
     } catch (e) {
       throw Exception('Erro ao salvar pedido: $e');
@@ -109,11 +108,7 @@ class OrderLocalRepository {
 
       // Remove o pedido
       try {
-        await db.delete(
-          'orders',
-          where: 'id = ?',
-          whereArgs: [orderId],
-        );
+        await db.delete('orders', where: 'id = ?', whereArgs: [orderId]);
       } catch (e) {
         throw Exception('Erro ao remover pedido: $e');
       }

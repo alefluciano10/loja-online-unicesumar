@@ -45,6 +45,21 @@ class UserLocalRepository {
     return null;
   }
 
+  // Novo método para buscar usuário por email
+  Future<UserModel?> getUserByEmail(String email) async {
+    final db = await AppDatabase().database;
+    final maps = await db.query(
+      'users',
+      where: 'email = ?',
+      whereArgs: [email.trim()],
+    );
+
+    if (maps.isNotEmpty) {
+      return _fromMap(maps.first);
+    }
+    return null;
+  }
+
   Future<UserModel?> login(LoginRequestModel request) async {
     final db = await AppDatabase().database;
     final maps = await db.query(

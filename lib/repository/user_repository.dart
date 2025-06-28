@@ -20,6 +20,19 @@ class UserRepository {
     }
   }
 
+  // Novo método para buscar usuário por email (local e remoto)
+  Future<UserModel?> getUserByEmail(String email) async {
+    UserModel? user = await localRepository.getUserByEmail(email);
+    if (user != null) return user;
+
+    final users = await remoteRepository.userService.fetchUsers();
+    try {
+      return users.firstWhere((user) => user.email == email.trim());
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<UserModel?> login(LoginRequestModel request) async {
     final hashedPassword = UserModel.hashPassword(request.password.trim());
 
