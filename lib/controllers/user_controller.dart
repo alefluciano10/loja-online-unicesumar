@@ -18,6 +18,11 @@ class UserController extends GetxController {
   // Campos de erro reativos
   final RxString usernameError = ''.obs;
   final RxString emailError = ''.obs;
+  final RxString passwordError = ''.obs;
+  final RxString confirmPasswordError = ''.obs;
+  final RxString firstNameError = ''.obs;
+  final RxString lastNameError = ''.obs;
+  final RxString phoneError = ''.obs;
 
   @override
   void onInit() {
@@ -34,20 +39,50 @@ class UserController extends GetxController {
     }
   }
 
-  // Limpa o erro do username (chame quando o usuário começa a digitar)
+  // Limpa erros ao começar digitar
   void clearUsernameError() {
     if (usernameError.value.isNotEmpty) {
       usernameError.value = '';
     }
   }
 
-  // Limpa o erro do email (chame quando o usuário começa a digitar)
   void clearEmailError() {
     if (emailError.value.isNotEmpty) {
       emailError.value = '';
     }
   }
 
+  void clearPasswordError() {
+    if (passwordError.value.isNotEmpty) {
+      passwordError.value = '';
+    }
+  }
+
+  void clearConfirmPasswordError() {
+    if (confirmPasswordError.value.isNotEmpty) {
+      confirmPasswordError.value = '';
+    }
+  }
+
+  void clearFirstNameError() {
+    if (firstNameError.value.isNotEmpty) {
+      firstNameError.value = '';
+    }
+  }
+
+  void clearLastNameError() {
+    if (lastNameError.value.isNotEmpty) {
+      lastNameError.value = '';
+    }
+  }
+
+  void clearPhoneError() {
+    if (phoneError.value.isNotEmpty) {
+      phoneError.value = '';
+    }
+  }
+
+  // Validações assíncronas para username e email
   Future<bool> validateUsername(String username) async {
     if (username.trim().isEmpty) {
       usernameError.value = 'Informe o nome de usuário';
@@ -67,6 +102,13 @@ class UserController extends GetxController {
   Future<bool> validateEmail(String email) async {
     if (email.trim().isEmpty) {
       emailError.value = 'Informe o e-mail';
+      return false;
+    }
+
+    // Validação simples de formato
+    final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+    if (!emailRegex.hasMatch(email)) {
+      emailError.value = 'E-mail inválido';
       return false;
     }
 
@@ -92,6 +134,89 @@ class UserController extends GetxController {
     return true;
   }
 
+  // Validações síncronas para demais campos
+  bool validatePassword(String password) {
+    if (password.trim().isEmpty) {
+      passwordError.value = 'Informe a senha';
+      return false;
+    }
+    if (password.length < 8) {
+      passwordError.value = 'Senha deve ter ao menos 8 caracteres';
+      return false;
+    }
+    passwordError.value = '';
+    return true;
+  }
+
+  bool validateConfirmPassword(String password, String confirmPassword) {
+    if (confirmPassword.trim().isEmpty) {
+      confirmPasswordError.value = 'Confirme a senha';
+      return false;
+    }
+    if (password != confirmPassword) {
+      confirmPasswordError.value = 'As senhas não conferem';
+      return false;
+    }
+    confirmPasswordError.value = '';
+    return true;
+  }
+
+  bool validateFirstName(String firstName) {
+    if (firstName.trim().isEmpty) {
+      firstNameError.value = 'Informe o primeiro nome';
+      return false;
+    }
+    firstNameError.value = '';
+    return true;
+  }
+
+  bool validateLastName(String lastName) {
+    if (lastName.trim().isEmpty) {
+      lastNameError.value = 'Informe o sobrenome';
+      return false;
+    }
+    lastNameError.value = '';
+    return true;
+  }
+
+  bool validatePhone(String phone) {
+    final digitsOnly = phone.replaceAll(RegExp(r'\D'), '');
+    if (digitsOnly.isEmpty) {
+      phoneError.value = 'Informe o telefone';
+      return false;
+    }
+    if (digitsOnly.length < 11) {
+      phoneError.value = 'Telefone incompleto';
+      return false;
+    }
+    phoneError.value = '';
+    return true;
+  }
+
+  // Validação geral de todos os campos antes de salvar
+  Future<bool> validateAllFields({
+    required String username,
+    required String email,
+    required String password,
+    required String confirmPassword,
+    required String firstName,
+    required String lastName,
+    required String phone,
+  }) async {
+    bool valid = true;
+
+    if (!await validateUsername(username)) valid = false;
+    if (!await validateEmail(email)) valid = false;
+    if (!validatePassword(password)) valid = false;
+    if (!validateConfirmPassword(password, confirmPassword)) valid = false;
+    if (!validateFirstName(firstName)) valid = false;
+    if (!validateLastName(lastName)) valid = false;
+    if (!validatePhone(phone)) valid = false;
+
+    return valid;
+  }
+
+  // Métodos para manipulação do usuário no storage
   Future<void> fetchUserById(int id) async {
     try {
       final fetchedUser = await userRepository.getUserById(id);

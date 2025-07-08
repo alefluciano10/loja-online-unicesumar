@@ -50,10 +50,7 @@ class LoadingButton extends StatelessWidget {
                     Icon(icon, color: Colors.white),
                     const SizedBox(width: 8),
                   ],
-                  Text(
-                    text,
-                    style: const TextStyle(color: Colors.white),
-                  ),
+                  Text(text, style: const TextStyle(color: Colors.white)),
                 ],
               ),
       ),

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text3/flutter_masked_text3.dart';
 import 'package:get/get.dart';
@@ -7,8 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import './../../controllers/controllers.dart';
 import './../../models/models.dart';
-import './../../custom/sucess_dialog.dart';
-import './../../custom/error_dialog.dart';
+import './../../custom/custom.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -19,7 +17,6 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final UserController userController = Get.find<UserController>();
-  final _formKey = GlobalKey<FormState>();
 
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -31,9 +28,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
-
-  // Novo FocusNode para o campo senha
   final FocusNode _passwordFocusNode = FocusNode();
+  final FocusNode _confirmPasswordFocusNode = FocusNode();
 
   final RxBool isLoading = false.obs;
   final RxBool obscurePassword = true.obs;
@@ -41,9 +37,12 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final RxString emailFormatError = ''.obs;
   final RxString phoneFormatError = ''.obs;
-
-  // Nova RxString para o erro da senha
   final RxString passwordError = ''.obs;
+  final RxString confirmPasswordError = ''.obs;
+  final RxString firstNameError = ''.obs;
+  final RxString lastNameError = ''.obs;
+
+  final RxBool _formSubmitted = false.obs;
 
   Timer? _usernameDebounce;
   Timer? _emailDebounce;
@@ -51,19 +50,12 @@ class _SignUpPageState extends State<SignUpPage> {
   final Color primaryColor = const Color(0xFF0F0358);
   final Color accentColor = Colors.orange;
 
-  bool _formSubmitted = false;
-
   @override
   void initState() {
     super.initState();
 
-    // RESET ao abrir a tela para limpar erros e evitar campos vermelhos indesejados
-    _formSubmitted = false;
     userController.clearUsernameError();
     userController.clearEmailError();
-    emailFormatError.value = '';
-    phoneFormatError.value = '';
-    passwordError.value = '';
 
     _usernameController.addListener(() {
       if (_usernameDebounce?.isActive ?? false) _usernameDebounce!.cancel();
@@ -72,7 +64,9 @@ class _SignUpPageState extends State<SignUpPage> {
           userController.validateUsername(_usernameController.text.trim());
         }
       });
-      if (userController.usernameError.value.isNotEmpty) {
+
+      if (userController.usernameError.value.isNotEmpty &&
+          _usernameController.text.trim().isNotEmpty) {
         userController.clearUsernameError();
       }
     });
@@ -92,7 +86,7 @@ class _SignUpPageState extends State<SignUpPage> {
         emailFormatError.value = '';
       }
 
-      if (userController.emailError.value.isNotEmpty) {
+      if (userController.emailError.value.isNotEmpty && email.isNotEmpty) {
         userController.clearEmailError();
       }
     });
@@ -108,9 +102,7 @@ class _SignUpPageState extends State<SignUpPage> {
     });
 
     _phoneController.addListener(() {
-      final digitsOnly = _phoneController.text.replaceAll(RegExp(r'\D'), '');
-      if (phoneFormatError.isNotEmpty &&
-          (digitsOnly.isEmpty || digitsOnly.length >= 11)) {
+      if (_phoneFocusNode.hasFocus && phoneFormatError.isNotEmpty) {
         phoneFormatError.value = '';
       }
     });
@@ -124,37 +116,74 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     });
 
-    // Listener do FocusNode para o campo senha
+    // Password FocusNode listener com lógica ajustada
     _passwordFocusNode.addListener(() {
-      if (!_passwordFocusNode.hasFocus) {
+      if (_passwordFocusNode.hasFocus) {
+        passwordError.value = '';
+      } else {
         final senha = _passwordController.text;
-        if (senha.length < 8 && senha.isNotEmpty) {
-          passwordError.value = 'Senha deve ter ao menos 8 caracteres';
+
+        if (!_formSubmitted.value) {
+          if (senha.isNotEmpty && senha.length < 8) {
+            passwordError.value = 'Senha deve ter ao menos 8 caracteres';
+          } else {
+            passwordError.value = '';
+          }
+        } else {
+          if (senha.isEmpty) {
+            passwordError.value = 'Informe a senha';
+          } else if (senha.length < 8) {
+            passwordError.value = 'Senha deve ter ao menos 8 caracteres';
+          } else {
+            passwordError.value = '';
+          }
         }
       }
     });
 
-    // Listener para limpar erro ao digitar senha válida ou limpar
-    _passwordController.addListener(() {
-      final senha = _passwordController.text;
-      if (passwordError.isNotEmpty) {
-        if (senha.isEmpty || senha.length >= 8) {
-          passwordError.value = '';
+    // Confirm Password FocusNode listener com lógica ajustada
+    _confirmPasswordFocusNode.addListener(() {
+      if (_confirmPasswordFocusNode.hasFocus) {
+        confirmPasswordError.value = '';
+      } else {
+        final confirm = _confirmPasswordController.text;
+        final senha = _passwordController.text;
+
+        if (!_formSubmitted.value) {
+          if (confirm.isNotEmpty && confirm != senha) {
+            confirmPasswordError.value = 'As senhas não conferem';
+          } else {
+            confirmPasswordError.value = '';
+          }
+        } else {
+          if (confirm.isEmpty) {
+            confirmPasswordError.value = 'Confirme a senha';
+          } else if (confirm != senha) {
+            confirmPasswordError.value = 'As senhas não conferem';
+          } else {
+            confirmPasswordError.value = '';
+          }
         }
       }
-      setState(() {}); // atualiza visibilidade do ícone, etc
     });
 
-    _firstnameController.addListener(() => setState(() {}));
-    _lastnameController.addListener(() => setState(() {}));
-    _confirmPasswordController.addListener(() => setState(() {}));
+    _firstnameController.addListener(() {
+      if (firstNameError.isNotEmpty && _firstnameController.text.isNotEmpty) {
+        firstNameError.value = '';
+      }
+    });
+
+    _lastnameController.addListener(() {
+      if (lastNameError.isNotEmpty && _lastnameController.text.isNotEmpty) {
+        lastNameError.value = '';
+      }
+    });
   }
 
   @override
   void dispose() {
     _usernameDebounce?.cancel();
     _emailDebounce?.cancel();
-
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -162,44 +191,11 @@ class _SignUpPageState extends State<SignUpPage> {
     _firstnameController.dispose();
     _lastnameController.dispose();
     _phoneController.dispose();
-
     _emailFocusNode.dispose();
     _phoneFocusNode.dispose();
     _passwordFocusNode.dispose();
-
+    _confirmPasswordFocusNode.dispose();
     super.dispose();
-  }
-
-  InputDecoration _inputDecoration(String label, Icon icon) {
-    return InputDecoration(
-      filled: true,
-      fillColor: Colors.white,
-      labelText: label,
-      hintText: label,
-      prefixIcon: icon,
-      hintStyle: const TextStyle(
-        color: Colors.black87,
-        fontSize: 14,
-        fontStyle: FontStyle.italic,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: const BorderRadius.all(Radius.circular(15)),
-        borderSide: BorderSide(color: Colors.grey.shade400, width: 2),
-      ),
-      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: const BorderRadius.all(Radius.circular(15)),
-        borderSide: BorderSide(color: primaryColor, width: 2),
-      ),
-      errorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
-      ),
-      focusedErrorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        borderSide: BorderSide(color: Colors.redAccent, width: 2),
-      ),
-    );
   }
 
   Future<bool> _validateAsyncFields() async {
@@ -209,7 +205,6 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_emailController.text.trim().isNotEmpty) {
       await userController.validateEmail(_emailController.text.trim());
     }
-
     return userController.usernameError.value.isEmpty &&
         userController.emailError.value.isEmpty;
   }
@@ -217,18 +212,46 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> _onSubmit() async {
     if (isLoading.value) return;
 
-    setState(() {
-      _formSubmitted = true;
-    });
+    _formSubmitted.value = true; // Ativa flag para mostrar erros completos
 
-    bool validSync = _formKey.currentState!.validate();
+    bool validSync = true;
 
+    if (_firstnameController.text.trim().isEmpty) {
+      firstNameError.value = 'Informe o primeiro nome';
+      validSync = false;
+    }
+    if (_lastnameController.text.trim().isEmpty) {
+      lastNameError.value = 'Informe o sobrenome';
+      validSync = false;
+    }
     if (_usernameController.text.trim().isEmpty) {
       userController.usernameError.value = 'Informe o nome de usuário';
       validSync = false;
     }
     if (_emailController.text.trim().isEmpty) {
       userController.emailError.value = 'Informe o e-mail';
+      validSync = false;
+    }
+    final phoneDigits = _phoneController.text.replaceAll(RegExp(r'\D'), '');
+    if (_phoneController.text.trim().isEmpty || phoneDigits.length < 11) {
+      phoneFormatError.value = _phoneController.text.trim().isEmpty
+          ? 'Informe o telefone'
+          : 'Telefone incompleto';
+      validSync = false;
+    }
+    if (_passwordController.text.trim().isEmpty) {
+      passwordError.value = 'Informe a senha';
+      validSync = false;
+    } else if (_passwordController.text.trim().length < 8) {
+      passwordError.value = 'Senha deve ter ao menos 8 caracteres';
+      validSync = false;
+    }
+    if (_confirmPasswordController.text.trim().isEmpty) {
+      confirmPasswordError.value = 'Confirme a senha';
+      validSync = false;
+    } else if (_confirmPasswordController.text.trim() !=
+        _passwordController.text.trim()) {
+      confirmPasswordError.value = 'As senhas não conferem';
       validSync = false;
     }
 
@@ -245,8 +268,7 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    bool validAsync = await _validateAsyncFields();
-
+    final validAsync = await _validateAsyncFields();
     if (!validAsync) {
       showDialog(
         context: context,
@@ -289,7 +311,6 @@ class _SignUpPageState extends State<SignUpPage> {
       userController.user.value = usuarioSalvo;
 
       await Future.delayed(const Duration(seconds: 2));
-
       Get.dialog(
         SuccessDialog(
           title: 'Cadastro realizado!',
@@ -315,189 +336,158 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  Widget _buildFirstNameField() {
-    return TextFormField(
+  Widget _buildFirstNameField() => Obx(() {
+    return CustomTextFormField(
       controller: _firstnameController,
-      decoration: _inputDecoration('Primeiro Nome', const Icon(Icons.badge)),
-      validator: (v) {
-        if (!_formSubmitted) return null;
-        return v == null || v.isEmpty ? 'Informe o primeiro nome' : null;
-      },
+      label: 'Primeiro Nome',
+      icon: const Icon(Icons.badge),
+      externalError: firstNameError.value.isNotEmpty
+          ? firstNameError.value
+          : null,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+      primaryColor: primaryColor,
     );
-  }
+  });
 
-  Widget _buildLastNameField() {
-    return TextFormField(
+  Widget _buildLastNameField() => Obx(() {
+    return CustomTextFormField(
       controller: _lastnameController,
-      decoration: _inputDecoration(
-        'Sobrenome',
-        const Icon(Icons.badge_outlined),
-      ),
-      validator: (v) {
-        if (!_formSubmitted) return null;
-        return v == null || v.isEmpty ? 'Informe o sobrenome' : null;
-      },
+      label: 'Sobrenome',
+      icon: const Icon(Icons.badge_outlined),
+      externalError: lastNameError.value.isNotEmpty
+          ? lastNameError.value
+          : null,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+      primaryColor: primaryColor,
     );
-  }
+  });
 
-  Widget _buildUsernameField() {
-    return Obx(() {
-      final error = userController.usernameError.value;
-      return TextFormField(
-        controller: _usernameController,
-        decoration: _inputDecoration(
-          'Usuário',
-          const Icon(Icons.person),
-        ).copyWith(errorText: error.isEmpty ? null : error),
-        validator: (v) {
-          if (!_formSubmitted) return null;
-          if (v == null || v.trim().isEmpty) {
-            return 'Informe o nome de usuário';
-          }
-          return null;
-        },
-      );
-    });
-  }
+  Widget _buildUsernameField() => Obx(() {
+    final error = userController.usernameError.value;
+    return CustomTextFormField(
+      controller: _usernameController,
+      label: 'Usuário',
+      icon: const Icon(Icons.person),
+      externalError: error.isNotEmpty ? error : null,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+      primaryColor: primaryColor,
+    );
+  });
 
-  Widget _buildEmailField() {
-    return Obx(() {
-      final controllerError = userController.emailError.value;
-      final localError = emailFormatError.value;
+  Widget _buildEmailField() => Obx(() {
+    final error = userController.emailError.value.isNotEmpty
+        ? userController.emailError.value
+        : emailFormatError.value;
+    return CustomTextFormField(
+      controller: _emailController,
+      label: 'Email',
+      icon: const Icon(Icons.email),
+      keyboardType: TextInputType.emailAddress,
+      externalError: error.isNotEmpty ? error : null,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+      focusNode: _emailFocusNode,
+      primaryColor: primaryColor,
+    );
+  });
 
-      return TextFormField(
-        controller: _emailController,
-        focusNode: _emailFocusNode,
-        decoration: _inputDecoration('Email', const Icon(Icons.email)).copyWith(
-          errorText: localError.isNotEmpty
-              ? localError
-              : (controllerError.isNotEmpty ? controllerError : null),
+  Widget _buildPhoneField() => Obx(() {
+    final error = phoneFormatError.value;
+    return CustomTextFormField(
+      controller: _phoneController,
+      label: 'Telefone',
+      icon: const Icon(Icons.phone),
+      keyboardType: TextInputType.phone,
+      externalError: error.isNotEmpty ? error : null,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) =>
+          FocusScope.of(context).requestFocus(_passwordFocusNode),
+      focusNode: _phoneFocusNode,
+      primaryColor: primaryColor,
+    );
+  });
+
+  Widget _buildPasswordField() => Obx(() {
+    return CustomTextFormField(
+      controller: _passwordController,
+      label: 'Senha',
+      icon: const Icon(Icons.lock),
+      obscureText: obscurePassword.value,
+      suffixIcon: IconButton(
+        icon: Icon(
+          obscurePassword.value ? Icons.visibility_off : Icons.visibility,
+          color: primaryColor,
         ),
-        keyboardType: TextInputType.emailAddress,
-        validator: (value) {
-          if (!_formSubmitted) return null;
-          if (value == null || value.trim().isEmpty) return 'Informe o e-mail';
-          if (localError.isNotEmpty) return localError;
-          if (controllerError.isNotEmpty) return controllerError;
-          return null;
-        },
-      );
-    });
-  }
+        onPressed: () => obscurePassword.value = !obscurePassword.value,
+      ),
+      externalError: passwordError.value.isNotEmpty
+          ? passwordError.value
+          : null,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) =>
+          FocusScope.of(context).requestFocus(_confirmPasswordFocusNode),
+      focusNode: _passwordFocusNode,
+      primaryColor: primaryColor,
+    );
+  });
 
-  Widget _buildPhoneField() {
-    return Obx(() {
-      final localError = phoneFormatError.value;
-
-      return TextFormField(
-        controller: _phoneController,
-        focusNode: _phoneFocusNode,
-        decoration: _inputDecoration(
-          'Telefone',
-          const Icon(Icons.phone),
-        ).copyWith(errorText: localError.isNotEmpty ? localError : null),
-        keyboardType: TextInputType.phone,
-        validator: (v) {
-          if (!_formSubmitted) return null;
-          if (v == null || v.isEmpty) return 'Informe o telefone';
-          final digitsOnly = v.replaceAll(RegExp(r'\D'), '');
-          if (digitsOnly.length < 11) return 'Telefone incompleto';
-          return null;
-        },
-      );
-    });
-  }
-
-  Widget _buildPasswordField() {
-    return Obx(() {
-      return TextFormField(
-        controller: _passwordController,
-        focusNode: _passwordFocusNode,
-        obscureText: obscurePassword.value,
-        decoration: _inputDecoration('Senha', const Icon(Icons.lock)).copyWith(
-          errorText: passwordError.value.isNotEmpty
-              ? passwordError.value
-              : null,
-          suffixIcon: IconButton(
-            icon: Icon(
-              obscurePassword.value ? Icons.visibility_off : Icons.visibility,
-            ),
-            onPressed: () => obscurePassword.value = !obscurePassword.value,
-          ),
+  Widget _buildConfirmPasswordField() => Obx(() {
+    final error = confirmPasswordError.value;
+    return CustomTextFormField(
+      controller: _confirmPasswordController,
+      label: 'Confirmar Senha',
+      icon: const Icon(Icons.lock_outline),
+      obscureText: obscureConfirmPassword.value,
+      suffixIcon: IconButton(
+        icon: Icon(
+          obscureConfirmPassword.value
+              ? Icons.visibility_off
+              : Icons.visibility,
+          color: primaryColor,
         ),
-        validator: (v) {
-          if (!_formSubmitted) return null;
-          if (v == null || v.length < 8) {
-            return 'Senha deve ter ao menos 8 caracteres';
-          }
-          return null;
-        },
-      );
-    });
-  }
+        onPressed: () =>
+            obscureConfirmPassword.value = !obscureConfirmPassword.value,
+      ),
+      externalError: error.isNotEmpty ? error : null,
+      textInputAction: TextInputAction.done,
+      onFieldSubmitted: (_) => _onSubmit(),
+      focusNode: _confirmPasswordFocusNode,
+      primaryColor: primaryColor,
+    );
+  });
 
-  Widget _buildConfirmPasswordField() {
-    return Obx(() {
-      return TextFormField(
-        controller: _confirmPasswordController,
-        obscureText: obscureConfirmPassword.value,
-        decoration:
-            _inputDecoration(
-              'Confirmar Senha',
-              const Icon(Icons.lock_outline),
-            ).copyWith(
-              suffixIcon: IconButton(
-                icon: Icon(
-                  obscureConfirmPassword.value
-                      ? Icons.visibility_off
-                      : Icons.visibility,
+  Widget _buildSubmitButton() => Obx(() {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton.icon(
+        icon: isLoading.value
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
                 ),
-                onPressed: () => obscureConfirmPassword.value =
-                    !obscureConfirmPassword.value,
-              ),
-            ),
-        validator: (v) {
-          if (!_formSubmitted) return null;
-          if (v == null || v.isEmpty) return 'Confirme a senha';
-          if (v != _passwordController.text) return 'As senhas não conferem';
-          if (v.length < 8) return 'Senha deve ter ao menos 8 caracteres';
-          return null;
-        },
-      );
-    });
-  }
-
-  Widget _buildSubmitButton() {
-    return Obx(() {
-      return SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: ElevatedButton.icon(
-          icon: isLoading.value
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              : const Icon(Icons.check_circle, color: Colors.white),
-          label: Text(
-            isLoading.value ? 'Cadastrando...' : 'Cadastrar',
-            style: const TextStyle(fontSize: 16, color: Colors.white),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          onPressed: isLoading.value ? null : _onSubmit,
+              )
+            : const Icon(Icons.check_circle, color: Colors.white),
+        label: Text(
+          isLoading.value ? 'Cadastrando...' : 'Cadastrar',
+          style: const TextStyle(fontSize: 16, color: Colors.white),
         ),
-      );
-    });
-  }
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: isLoading.value ? null : _onSubmit,
+      ),
+    );
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -514,52 +504,50 @@ class _SignUpPageState extends State<SignUpPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            autovalidateMode: _formSubmitted
-                ? AutovalidateMode.onUserInteraction
-                : AutovalidateMode.disabled,
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                Icon(Icons.person_add, size: 80, color: accentColor),
-                const SizedBox(height: 16),
-                Text(
-                  'Crie sua conta!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: accentColor,
-                    fontStyle: FontStyle.italic,
-                  ),
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+              Icon(Icons.person_add, size: 80, color: accentColor),
+              const SizedBox(height: 16),
+              Text(
+                'Crie sua conta!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: accentColor,
+                  fontStyle: FontStyle.italic,
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Preencha seus dados para continuar',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                    fontStyle: FontStyle.italic,
-                  ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Preencha seus dados para continuar',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                  fontStyle: FontStyle.italic,
                 ),
-                const SizedBox(height: 32),
-                _buildFirstNameField(),
-                const SizedBox(height: 16),
-                _buildLastNameField(),
-                const SizedBox(height: 16),
-                _buildUsernameField(),
-                const SizedBox(height: 16),
-                _buildEmailField(),
-                const SizedBox(height: 16),
-                _buildPhoneField(),
-                const SizedBox(height: 16),
-                _buildPasswordField(),
-                const SizedBox(height: 16),
-                _buildConfirmPasswordField(),
-                const SizedBox(height: 24),
-                _buildSubmitButton(),
-              ],
-            ),
+              ),
+              const SizedBox(height: 40),
+              Row(
+                children: [
+                  Expanded(child: _buildFirstNameField()),
+                  const SizedBox(width: 16),
+                  Expanded(child: _buildLastNameField()),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildUsernameField(),
+              const SizedBox(height: 16),
+              _buildEmailField(),
+              const SizedBox(height: 16),
+              _buildPhoneField(),
+              const SizedBox(height: 16),
+              _buildPasswordField(),
+              const SizedBox(height: 16),
+              _buildConfirmPasswordField(),
+              const SizedBox(height: 32),
+              _buildSubmitButton(),
+            ],
           ),
         ),
       ),
