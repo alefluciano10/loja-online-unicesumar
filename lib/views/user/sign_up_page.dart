@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text3/flutter_masked_text3.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:animate_do/animate_do.dart';
 
 import './../../controllers/controllers.dart';
 import './../../models/models.dart';
@@ -47,8 +48,8 @@ class _SignUpPageState extends State<SignUpPage> {
   Timer? _usernameDebounce;
   Timer? _emailDebounce;
 
-  final Color primaryColor = const Color(0xFF0F0358);
-  final Color accentColor = Colors.orange;
+  final Color primaryColor = const Color(0xFFFF6B00);
+  final Color accentColor = const Color(0xFF344055);
 
   @override
   void initState() {
@@ -116,7 +117,6 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     });
 
-    // Password FocusNode listener com lógica ajustada
     _passwordFocusNode.addListener(() {
       if (_passwordFocusNode.hasFocus) {
         passwordError.value = '';
@@ -141,7 +141,6 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     });
 
-    // Confirm Password FocusNode listener com lógica ajustada
     _confirmPasswordFocusNode.addListener(() {
       if (_confirmPasswordFocusNode.hasFocus) {
         confirmPasswordError.value = '';
@@ -212,7 +211,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> _onSubmit() async {
     if (isLoading.value) return;
 
-    _formSubmitted.value = true; // Ativa flag para mostrar erros completos
+    _formSubmitted.value = true; // ativa flag para mostrar erros
 
     bool validSync = true;
 
@@ -383,7 +382,7 @@ class _SignUpPageState extends State<SignUpPage> {
         : emailFormatError.value;
     return CustomTextFormField(
       controller: _emailController,
-      label: 'Email',
+      label: 'E-mail',
       icon: const Icon(Icons.email),
       keyboardType: TextInputType.emailAddress,
       externalError: error.isNotEmpty ? error : null,
@@ -419,7 +418,7 @@ class _SignUpPageState extends State<SignUpPage> {
       suffixIcon: IconButton(
         icon: Icon(
           obscurePassword.value ? Icons.visibility_off : Icons.visibility,
-          color: primaryColor,
+          color: Color(0xFF5F6C7B),
         ),
         onPressed: () => obscurePassword.value = !obscurePassword.value,
       ),
@@ -446,7 +445,7 @@ class _SignUpPageState extends State<SignUpPage> {
           obscureConfirmPassword.value
               ? Icons.visibility_off
               : Icons.visibility,
-          color: primaryColor,
+          color: Color(0xFF5F6C7B),
         ),
         onPressed: () =>
             obscureConfirmPassword.value = !obscureConfirmPassword.value,
@@ -493,7 +492,17 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastro'),
+        title: const Text(
+          'Cadastro',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        iconTheme: const IconThemeData(color: Colors.black87),
         leading: Navigator.canPop(context)
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -501,52 +510,83 @@ class _SignUpPageState extends State<SignUpPage> {
               )
             : null,
       ),
+      backgroundColor: const Color(0xFFFAFAFA),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
               const SizedBox(height: 40),
-              Icon(Icons.person_add, size: 80, color: accentColor),
+              FadeInDown(
+                duration: const Duration(milliseconds: 800),
+                child: Icon(Icons.person_add, size: 80, color: primaryColor),
+              ),
               const SizedBox(height: 16),
-              Text(
-                'Crie sua conta!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: accentColor,
-                  fontStyle: FontStyle.italic,
+              FadeInUp(
+                delay: const Duration(milliseconds: 300),
+                child: Text(
+                  'Crie sua conta!',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF344055),
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Preencha seus dados para continuar',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                  fontStyle: FontStyle.italic,
+              FadeInUp(
+                delay: const Duration(milliseconds: 400),
+                child: const Text(
+                  'Preencha seus dados para continuar',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF5F6C7B),
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               ),
               const SizedBox(height: 40),
-              Row(
-                children: [
-                  Expanded(child: _buildFirstNameField()),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildLastNameField()),
-                ],
+              FadeInUp(
+                delay: const Duration(milliseconds: 500),
+                child: Row(
+                  children: [
+                    Expanded(child: _buildFirstNameField()),
+                    const SizedBox(width: 16),
+                    Expanded(child: _buildLastNameField()),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
-              _buildUsernameField(),
+              FadeInUp(
+                delay: const Duration(milliseconds: 600),
+                child: _buildUsernameField(),
+              ),
               const SizedBox(height: 16),
-              _buildEmailField(),
+              FadeInUp(
+                delay: const Duration(milliseconds: 700),
+                child: _buildEmailField(),
+              ),
               const SizedBox(height: 16),
-              _buildPhoneField(),
+              FadeInUp(
+                delay: const Duration(milliseconds: 800),
+                child: _buildPhoneField(),
+              ),
               const SizedBox(height: 16),
-              _buildPasswordField(),
+              FadeInUp(
+                delay: const Duration(milliseconds: 900),
+                child: _buildPasswordField(),
+              ),
               const SizedBox(height: 16),
-              _buildConfirmPasswordField(),
+              FadeInUp(
+                delay: const Duration(milliseconds: 1000),
+                child: _buildConfirmPasswordField(),
+              ),
               const SizedBox(height: 32),
-              _buildSubmitButton(),
+              FadeInUp(
+                delay: const Duration(milliseconds: 1100),
+                child: _buildSubmitButton(),
+              ),
             ],
           ),
         ),

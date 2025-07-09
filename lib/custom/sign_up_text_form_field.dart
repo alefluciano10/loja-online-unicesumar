@@ -78,21 +78,30 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       focusNode: _focusNode,
       textInputAction: widget.textInputAction,
       onFieldSubmitted: widget.onFieldSubmitted,
-      style: TextStyle(
-        fontStyle: FontStyle.normal, // texto digitado normal (sem itálico)
+      style: const TextStyle(
+        fontStyle: FontStyle.normal,
+        color: Color(0xFF344055), // texto azul grafite igual label
       ),
       decoration: InputDecoration(
+        filled: true,
+        fillColor: const Color(0xFFF5F7FA), // fundo cinza claro igual login
         labelText: widget.label,
         labelStyle: TextStyle(
-          fontStyle: FontStyle.normal, // label sempre normal (não itálico)
-          color: _hasFocus ? widget.primaryColor : Colors.grey[700],
+          fontStyle: FontStyle.normal,
+          color: _hasFocus ? Colors.indigo : const Color(0xFF344055),
+          fontWeight: FontWeight.w500,
+          fontSize: 15,
         ),
         hintText: isEmpty ? widget.label : null,
-        hintStyle: TextStyle(
-          fontStyle: FontStyle.italic, // hint itálico só se campo vazio
-          color: Colors.grey[700],
+        hintStyle: const TextStyle(
+          fontStyle: FontStyle.italic,
+          color: Color(0xFFA0AAB4),
+          fontSize: 14,
         ),
-        prefixIcon: widget.icon,
+        prefixIcon: IconTheme(
+          data: const IconThemeData(color: Color(0xFF5F6C7B)),
+          child: widget.icon,
+        ),
         suffixIcon:
             widget.suffixIcon ??
             (showErrorNow
@@ -108,30 +117,32 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                         )
                       : null)
                 : null),
-        errorText: showErrorNow && hasError ? widget.externalError : null,
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: hasError ? Colors.red : Colors.grey.shade400,
+            color: hasError ? Colors.red : Colors.grey.shade300,
+            width: 1.8,
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: widget.primaryColor, width: 2),
-          borderRadius: BorderRadius.circular(12),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.indigo, width: 2),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red.shade700, width: 2),
-          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.redAccent.shade700, width: 1.5),
+          borderRadius: BorderRadius.circular(15),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red.shade700, width: 2),
-          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.redAccent.shade700, width: 2),
+          borderRadius: BorderRadius.circular(15),
         ),
         contentPadding: const EdgeInsets.symmetric(
           vertical: 14,
-          horizontal: 16,
+          horizontal: 12,
         ),
+        errorText: showErrorNow ? widget.externalError : null,
       ),
+      validator: widget.validator,
     );
   }
 }

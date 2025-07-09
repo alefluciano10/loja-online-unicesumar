@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:animate_do/animate_do.dart';
+import '../../custom/custom.dart';
 
-import './../../controllers/controllers.dart';
-import './../../models/models.dart';
+import '../../controllers/controllers.dart';
+import '../../models/models.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -37,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
 
     final request = LoginRequestModel(
       username: usernameController.text.trim(),
-      password: passwordController.text.trim(), // ❗ Senha pura
+      password: passwordController.text.trim(),
     );
 
     EasyLoading.show(
@@ -65,43 +67,22 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  InputDecoration _inputDecoration(String label, Icon icon) {
-    return InputDecoration(
-      filled: true,
-      fillColor: Colors.white,
-      labelText: label,
-      hintText: label,
-      prefixIcon: icon,
-      hintStyle: const TextStyle(
-        color: Colors.black87,
-        fontSize: 14,
-        fontStyle: FontStyle.italic,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: const BorderRadius.all(Radius.circular(15)),
-        borderSide: BorderSide(color: Colors.grey.shade400, width: 2),
-      ),
-      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-      focusedBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        borderSide: BorderSide(color: Color(0xFF1A237E), width: 2),
-      ),
-      errorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
-      ),
-      focusedErrorBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-        borderSide: BorderSide(color: Colors.redAccent, width: 2),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA), // Fundo claro
       appBar: AppBar(
-        title: const Text('Login'),
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        iconTheme: const IconThemeData(color: Colors.black87),
+        title: const Text(
+          'Login',
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
         leading: Navigator.canPop(context)
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -111,140 +92,175 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
           child: Form(
             key: _formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
-                const Icon(Icons.person, size: 80, color: Colors.orange),
+                FadeInDown(
+                  duration: const Duration(milliseconds: 800),
+                  child: const Icon(
+                    Icons.person,
+                    size: 80,
+                    color: Color(0xFFFF6B00),
+                  ),
+                ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Bem-vindo(a) de volta!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange,
-                    fontStyle: FontStyle.italic,
+                FadeInUp(
+                  delay: const Duration(milliseconds: 300),
+                  child: const Text(
+                    'Bem-vindo(a) de volta!',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF344055),
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Acesse sua conta para continuar',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                    fontStyle: FontStyle.italic,
+                FadeInUp(
+                  delay: const Duration(milliseconds: 400),
+                  child: const Text(
+                    'Acesse sua conta para continuar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF5F6C7B),
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
-                TextFormField(
-                  controller: usernameController,
-                  textInputAction: TextInputAction.next,
-                  autofillHints: const [AutofillHints.username],
-                  decoration: _inputDecoration(
-                    'Usuário',
-                    const Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Informe seu nome de usuário';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                Obx(
-                  () => TextFormField(
-                    controller: passwordController,
-                    obscureText: obscurePassword.value,
-                    textInputAction: TextInputAction.done,
-                    autofillHints: const [AutofillHints.password],
-                    onFieldSubmitted: (_) => _login(),
-                    decoration:
-                        _inputDecoration(
-                          'Senha',
-                          const Icon(Icons.lock),
-                        ).copyWith(
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              obscurePassword.value
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onPressed: () {
-                              obscurePassword.value = !obscurePassword.value;
-                            },
-                          ),
-                        ),
+
+                // Campo usuário
+                FadeInUp(
+                  delay: const Duration(milliseconds: 500),
+                  child: TextFormField(
+                    controller: usernameController,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.username],
+                    decoration: CustomInputDecorations.inputDecoration(
+                      'Usuário',
+                      const Icon(Icons.person),
+                    ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Informe sua senha';
+                        return 'Informe seu nome de usuário';
                       }
                       return null;
                     },
                   ),
                 ),
-                const SizedBox(height: 24),
-                Obx(
-                  () => SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton.icon(
-                      icon: isLoading.value
-                          ? const SizedBox.shrink()
-                          : const Icon(Icons.login, color: Colors.white),
-                      label: isLoading.value
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
+                const SizedBox(height: 16),
+
+                // Campo senha
+                FadeInUp(
+                  delay: const Duration(milliseconds: 600),
+                  child: Obx(
+                    () => TextFormField(
+                      controller: passwordController,
+                      obscureText: obscurePassword.value,
+                      textInputAction: TextInputAction.done,
+                      autofillHints: const [AutofillHints.password],
+                      onFieldSubmitted: (_) => _login(),
+                      decoration:
+                          CustomInputDecorations.inputDecoration(
+                            'Senha',
+                            const Icon(Icons.lock),
+                          ).copyWith(
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                obscurePassword.value
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: const Color(0xFF5F6C7B),
                               ),
-                            )
-                          : const Text(
-                              'Entrar',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
+                              onPressed: () {
+                                obscurePassword.value = !obscurePassword.value;
+                              },
                             ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 15, 3, 88),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Informe sua senha';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Botão Entrar
+                FadeInUp(
+                  delay: const Duration(milliseconds: 700),
+                  child: Obx(
+                    () => SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        icon: isLoading.value
+                            ? const SizedBox.shrink()
+                            : const Icon(Icons.login, color: Colors.white),
+                        label: isLoading.value
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Entrar',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF6B00),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
+                        onPressed: isLoading.value ? null : _login,
                       ),
-                      onPressed: isLoading.value ? null : _login,
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Não tem uma conta? ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black54,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Get.toNamed('/signup'),
-                      child: const Text(
-                        'Cadastre-se',
+
+                // Link de cadastro
+                FadeInUp(
+                  delay: const Duration(milliseconds: 800),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Não tem uma conta? ',
                         style: TextStyle(
-                          color: Color.fromARGB(255, 17, 2, 134),
                           fontSize: 16,
+                          color: Color(0xFF5F6C7B),
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
-                    ),
-                  ],
+                      TextButton(
+                        onPressed: () => Get.toNamed('/signup'),
+                        child: const Text(
+                          'Cadastre-se',
+                          style: TextStyle(
+                            color: Color(0xFFFF6B00),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
