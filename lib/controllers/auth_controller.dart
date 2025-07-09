@@ -119,17 +119,6 @@ class AuthController extends GetxController {
       await userController.userRepository.saveUser(updatedUser);
       box.write('usuario', jsonEncode(updatedUser.toJson()));
 
-      Get.snackbar(
-        'Sucesso',
-        'Senha alterada com sucesso.',
-        colorText: Colors.white,
-        backgroundColor: Colors.black87,
-        snackPosition: SnackPosition.TOP,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.logout, color: Colors.white),
-        duration: const Duration(seconds: 3),
-      );
       return true;
     } catch (e) {
       erro.value = 'Erro ao trocar a senha';
